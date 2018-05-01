@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
+import { Http } from '@angular/http';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { HomePage } from "../index.paginas";
-/**
- * Generated class for the LoginPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { AlertController, LoadingController } from 'ionic-angular';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+
+import { url } from "../../config/url.config"
 
 @IonicPage()
 @Component({
@@ -14,12 +13,167 @@ import { HomePage } from "../index.paginas";
   templateUrl: 'login.html',
 })
 export class LoginPage {
+  validate:any={};
   sigin:any = HomePage;
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  registerForm: FormGroup;
+  User = { "Email": "", "Password": "", "ConfirmPassword": "" };
+  UserLogin = { "Email": "", "Password": "" };
+
+  constructor(      public navCtrl: NavController, public navParams: NavParams,
+                    public http: Http, public alertCtrl: AlertController,
+                    public loadingCtrl: LoadingController
+             )  {
+                    this.segments = 'login';
+                }
+
+  ngOnInit() {
+    let EMAILPATTERN = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
+    this.registerForm = new FormGroup({
+    ConfirmPassword: new FormControl('', [Validators.required]),
+    Password: new FormControl('', [Validators.required]),
+    Email: new FormControl('', [Validators.required, Validators.pattern(EMAILPATTERN)]),
+    });
+    this.LoginForm = new FormGroup({
+    Password: new FormControl('', [Validators.required]),
+    Email: new FormControl('', [Validators.required, Validators.pattern(EMAILPATTERN)]),
+    });
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad LoginPage');
+  RecoverPassword(){
+
+    if (!this.LoginForm.controls.Email.valid) {
+      let alert = this.alertCtrl.create({
+        title: 'Oops!',
+        subTitle: 'Por favor revisa los campos con error.',
+        buttons: ['Ok']
+      });
+      alert.present();
+      return 0;
+    }
+
+    let mUrl = url + 'public/RecoverPassword';
+
+    const body = {User: this.UserLogin};
+
+    let loading = this.loadingCtrl.create({
+      content: 'Working...',
+      spinner: 'ios'
+    });
+
+    loading.present();
+
+    this.http
+      .post( mUrl, body ).subscribe(res => {
+        loading.dismiss();
+        if (res.json().result == 'userExist' ){
+          let alert = this.alertCtrl.create({
+            title: 'Oops!',
+            subTitle: 'El usuario no existe. Ya te registraste?',
+            buttons: ['Ok']
+          });
+          alert.present();
+        }
+        else if (res.json().result == 'error'){
+          let alert = this.alertCtrl.create({
+            title: 'Oops!',
+            subTitle: 'Ocurrió un error inesperado.',
+            buttons: ['Ok']
+          });
+          alert.present();
+        }
+        else {
+          let alert = this.alertCtrl.create({
+            title: 'Genial!',
+            subTitle: 'Hemos enviado una contraseña temporal a tu correo.',
+            buttons: ['Ok']
+          });
+          alert.present();
+        }
+      }
+    )
+
+  }
+
+  Login() {
+
+    if (!this.LoginForm.valid) {
+      let alert = this.alertCtrl.create({
+        title: 'Oops!',
+        subTitle: 'Por favor revisa los campos con error.',
+        buttons: ['Ok']
+      });
+      alert.present();
+      return 0;
+    }
+
+    let mUrl = url + 'public/GetUser';
+
+    const body = {User: this.UserLogin};
+
+    let loading = this.loadingCtrl.create({
+      content: 'Working...',
+      spinner: 'ios'
+    });
+
+    loading.present();
+
+    this.http
+      .post( mUrl, body ).subscribe(res => {
+        loading.dismiss();
+        if (res.json().result == 'ok' ){
+          this.navCtrl.push( HomePage )
+        }
+        else{
+          let alert = this.alertCtrl.create({
+            title: 'Oops!',
+            subTitle: 'El usuario no existe. Ya te registraste?',
+            buttons: ['Ok']
+          });
+          alert.present();        }
+      }
+    )
+
+  }
+
+  CreateUser() {
+
+    if (!this.registerForm.valid) {
+      let alert = this.alertCtrl.create({
+        title: 'Oops!',
+        subTitle: 'Por favor revisa los campos con error.',
+        buttons: ['Ok']
+      });
+      alert.present();
+      return 0;
+    }
+
+    let mUrl = url + 'public/InsertUser';
+
+    const body = {User: this.User};
+
+    let loading = this.loadingCtrl.create({
+      content: 'Working...',
+      spinner: 'ios'
+    });
+
+    loading.present();
+
+    this.http
+      .post( mUrl, body ).subscribe(res => {
+        loading.dismiss();
+        if (res.json().result == 'ok' ){
+          this.navCtrl.push( HomePage )
+        }
+        else{
+          let alert = this.alertCtrl.create({
+            title: 'Oops!',
+            subTitle: 'Ocurrió un error inesperado.',
+            buttons: ['Ok']
+          });
+          alert.present();        }
+      }
+    )
+
   }
 
 }

@@ -16,6 +16,7 @@ import {HomePage,PosicionesPage,RegistroPage} from '../pages/index.paginas';
   ],
   imports: [
     BrowserModule,
+    HttpModule,
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
