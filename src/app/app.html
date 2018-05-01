@@ -1,0 +1,23 @@
+
+<ion-menu [content]="content" >
+  <ion-header>
+    <ion-navbar color="rojo">
+      <ion-title>Menu</ion-title>
+    </ion-navbar>
+  </ion-header>
+  <ion-content class="mymenu">
+    <ion-list>
+      <button ion-item (click)="abrirpagina(Pronosticos)">
+        Pronósticos
+      </button>
+      <button ion-item (click)="abrirpagina(Posiciones)">
+        Posiciones
+      </button>
+      <button ion-item (click)="abrirpagina(Registro)">
+        Registro
+      </button>
+
+    </ion-list>
+  </ion-content>
+</ion-menu>
+<ion-nav #content [root]="rootPage"></ion-nav>
