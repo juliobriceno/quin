@@ -6,23 +6,19 @@
 -->
 <ion-header>
   <ion-navbar color="rojo">
-    <ion-title>Registro</ion-title>
-    <ion-buttons>
-      <button ion-button icon-only menuToggle>
-        <ion-icon name="menu"></ion-icon>
-      </button>
-    </ion-buttons>
+    <ion-title>Grupos</ion-title>
+
   </ion-navbar>
 </ion-header>
 
 
 <ion-content padding class="background">
   <ion-grid>
-    <ion-row>
+  <!--  <ion-row>
       <ion-col col-12>
         <ion-list no-lines padding-top>
           <ion-list-header color="light">
-   Información Registro
+   <h2>Información Registro</h2>
 
  </ion-list-header>
           <ion-item>
@@ -30,13 +26,38 @@
             <ion-icon name="mail" color="gray" small item-left></ion-icon>
           </ion-item>
           <ion-item>
-            <ion-input type="password" placeholder="Contraseña" clearInput="true"></ion-input>
+            <ion-input type="password" placeholder="Contraseña actual" clearInput="true"></ion-input>
             <ion-icon name="lock" color="gray" small item-left></ion-icon>
           </ion-item>
           <ion-item>
-            <ion-input type="password" placeholder="Confirmar Contraseña" clearInput="true"></ion-input>
+            <ion-input type="password" placeholder="Contraseña nueva" clearInput="true"></ion-input>
             <ion-icon name="lock" color="gray" small item-left></ion-icon>
           </ion-item>
+          <ion-item>
+            <ion-input type="password" placeholder="Confirmar contraseña nueva" clearInput="true"></ion-input>
+            <ion-icon name="lock" color="gray" small item-left></ion-icon>
+          </ion-item>
+
+
+
+        </ion-list>
+      </ion-col>
+
+    </ion-row>-->
+
+    <ion-row>
+      <ion-col col-12>
+        <ion-list no-lines padding-top>
+          <ion-list-header color="light">
+   <h2>Nuevo grupo</h2>
+
+ </ion-list-header>
+          <ion-item>
+            <ion-input type="text" placeholder="Nombre grupo" clearInput="true"></ion-input>
+            <ion-icon name="clipboard" color="gray" small item-left></ion-icon>
+            <button ion-button small item-end color="blumundial"><ion-icon name='add'></ion-icon></button>
+          </ion-item>
+
 
 
 
@@ -48,8 +69,8 @@
       <ion-col>
         <ion-list >
           <ion-list-header color="light">
-   Lista de Grupos
-   <button ion-button small outline item-end><ion-icon name='add'></ion-icon> Nuevo grupo</button>
+  <h2> Lista de Grupos</h2>
+
  </ion-list-header>
   <ion-item>
 
@@ -66,7 +87,7 @@
       @Familia
     <button ion-button clear item-end><ion-icon name='close'></ion-icon></button>
   </ion-item>
-  <button ion-button large block color="blumundial">Guardar</button>
+
 </ion-list>
       </ion-col>
     </ion-row>

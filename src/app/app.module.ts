@@ -5,14 +5,16 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { MyApp } from './app.component';
-import {HomePage,PosicionesPage,RegistroPage} from '../pages/index.paginas';
+import {HomePage,PosicionesPage,TabsPage,RegistroPage,MenuopcionesPage} from '../pages/index.paginas';
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
     PosicionesPage,
-    RegistroPage
+    RegistroPage,
+    TabsPage,
+    MenuopcionesPage
   ],
   imports: [
     BrowserModule,
@@ -24,7 +26,9 @@ import {HomePage,PosicionesPage,RegistroPage} from '../pages/index.paginas';
     MyApp,
     HomePage,
     PosicionesPage,
-    RegistroPage
+    RegistroPage,
+    TabsPage,
+    MenuopcionesPage
   ],
   providers: [
     StatusBar,
