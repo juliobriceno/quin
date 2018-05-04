@@ -6,6 +6,9 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { MyApp } from './app.component';
 import {HomePage,PosicionesPage,TabsPage,RegistroPage,MenuopcionesPage} from '../pages/index.paginas';
+import { SharedObjectsProvider } from '../providers/shared-objects/shared-objects';
+
+import { GropByPipe } from '../pipes/grop-by/grop-by';
 
 @NgModule({
   declarations: [
@@ -14,7 +17,8 @@ import {HomePage,PosicionesPage,TabsPage,RegistroPage,MenuopcionesPage} from '..
     PosicionesPage,
     RegistroPage,
     TabsPage,
-    MenuopcionesPage
+    MenuopcionesPage,
+    GropByPipe
   ],
   imports: [
     BrowserModule,
@@ -33,7 +37,8 @@ import {HomePage,PosicionesPage,TabsPage,RegistroPage,MenuopcionesPage} from '..
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    SharedObjectsProvider
   ]
 })
 export class AppModule {}

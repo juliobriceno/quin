@@ -7,6 +7,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { url } from "../../config/url.config"
 
+import { SharedObjectsProvider } from '../../providers/shared-objects/shared-objects';
+
 @IonicPage()
 @Component({
   selector: 'page-login',
@@ -21,7 +23,8 @@ export class LoginPage {
 
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
-                    public loadingCtrl: LoadingController
+                    public loadingCtrl: LoadingController,
+                    public ctrlSharedObjectsProvider:SharedObjectsProvider
              )  {
                     this.segments = 'login';
                 }
@@ -29,7 +32,7 @@ export class LoginPage {
   ngOnInit() {
     let EMAILPATTERN = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
     this.registerForm = new FormGroup({
-    ConfirmPassword: new FormControl('', [Validators.required]),
+    ConfirmPassword: new FormControl('', [Validators.required, this.equalto('Password')]),
     Password: new FormControl('', [Validators.required]),
     Email: new FormControl('', [Validators.required, Validators.pattern(EMAILPATTERN)]),
     });
@@ -37,6 +40,17 @@ export class LoginPage {
     Password: new FormControl('', [Validators.required]),
     Email: new FormControl('', [Validators.required, Validators.pattern(EMAILPATTERN)]),
     });
+  }
+
+  equalto(field_name): ValidatorFn {
+    return (control: AbstractControl): {[key: string]: any} => {
+    let input = control.value;
+    let isValid=control.root.value[field_name]==input
+    if(!isValid)
+      return { 'equalTo': {isValid} }
+    else
+      return null;
+    };
   }
 
   RecoverPassword(){
@@ -162,7 +176,16 @@ export class LoginPage {
       .post( mUrl, body ).subscribe(res => {
         loading.dismiss();
         if (res.json().result == 'ok' ){
+          this.ctrlSharedObjectsProvider.setUser(res.json().User);
           this.navCtrl.push( HomePage )
+        }
+        else if (res.json().result == 'userExist' ){
+          let alert = this.alertCtrl.create({
+            title: 'Oops!',
+            subTitle: 'El usuario que intentas crear ya existe.',
+            buttons: ['Ok']
+          });
+          alert.present();
         }
         else{
           let alert = this.alertCtrl.create({
