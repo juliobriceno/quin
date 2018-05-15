@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { MenuopcionesPage } from "../index.paginas";
 
 /**
- * Generated class for the RegistroPage page.
+ * Generated class for the QuinielagrupoPage page.
  *
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
@@ -11,16 +10,16 @@ import { MenuopcionesPage } from "../index.paginas";
 
 @IonicPage()
 @Component({
-  selector: 'page-registro',
-  templateUrl: 'registro.html',
+  selector: 'page-quinielagrupo',
+  templateUrl: 'quinielagrupo.html',
 })
-export class RegistroPage {
-  MenuOpciones:any = MenuopcionesPage;
+export class QuinielagrupoPage {
+
   constructor(public navCtrl: NavController, public navParams: NavParams) {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad RegistroPage');
+    console.log('ionViewDidLoad QuinielagrupoPage');
   }
 
 }

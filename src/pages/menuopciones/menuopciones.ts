@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { PerfilPage,ContrasenaPage } from "../index.paginas";
 
 /**
  * Generated class for the MenuopcionesPage page.
@@ -14,6 +15,8 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   templateUrl: 'menuopciones.html',
 })
 export class MenuopcionesPage {
+  Perfil:any =  PerfilPage;
+  Contrasena:any =  ContrasenaPage;
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
   }

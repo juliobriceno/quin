@@ -6,13 +6,22 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>menuopciones</ion-title>
+  <ion-navbar  color="rojo">
+    <ion-title>Opciones</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding>
+<ion-content   class="background">
+  <ion-list >
+      <ion-item-divider color="light">  <h3>Cuenta</h3></ion-item-divider>
 
+      <ion-item [navPush]="Perfil">Editar perfil</ion-item>
+      <ion-item [navPush]="Contrasena">Cambiar contraseña</ion-item>
+
+      <hr class="custom-hr" color="gray">
+      <ion-item (click)="ExitApp()">Cerrar sesión</ion-item>
+
+    </ion-list>
 </ion-content>

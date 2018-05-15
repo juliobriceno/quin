@@ -16,7 +16,7 @@ import { GropByPipe } from '../../pipes/grop-by/grop-by';
   templateUrl: 'home.html'
 })
 export class HomePage {
-  tab10:any = MenuopcionesPage;
+  MenuOpciones:any = MenuopcionesPage;
   User = { };
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,

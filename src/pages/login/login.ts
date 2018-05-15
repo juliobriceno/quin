@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Http } from '@angular/http';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { HomePage } from "../index.paginas";
+import { HomePage, TabsPage, RecuperarcontrasenaPage } from "../index.paginas";
 import { AlertController, LoadingController } from 'ionic-angular';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -15,8 +15,9 @@ import { SharedObjectsProvider } from '../../providers/shared-objects/shared-obj
   templateUrl: 'login.html',
 })
 export class LoginPage {
+  tab1:any = TabsPage;
+  RecuperarContrasena:any = RecuperarcontrasenaPage;
   validate:any={};
-  sigin:any = HomePage;
   registerForm: FormGroup;
   User = { "Email": "", "Password": "", "ConfirmPassword": "" };
   UserLogin = { "Email": "", "Password": "" };
@@ -135,7 +136,7 @@ export class LoginPage {
       .post( mUrl, body ).subscribe(res => {
         loading.dismiss();
         if (res.json().result == 'ok' ){
-          this.navCtrl.push( HomePage )
+          this.navCtrl.push( TabsPage )
         }
         else{
           let alert = this.alertCtrl.create({
@@ -177,7 +178,7 @@ export class LoginPage {
         loading.dismiss();
         if (res.json().result == 'ok' ){
           this.ctrlSharedObjectsProvider.setUser(res.json().User);
-          this.navCtrl.push( HomePage )
+          this.navCtrl.push( TabsPage )
         }
         else if (res.json().result == 'userExist' ){
           let alert = this.alertCtrl.create({

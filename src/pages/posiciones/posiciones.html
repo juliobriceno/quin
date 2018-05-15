@@ -8,11 +8,12 @@
 
   <ion-navbar color="rojo">
     <ion-title>Posiciones</ion-title>
-    <ion-buttons>
-      <button ion-button icon-only menuToggle>
-        <ion-icon name="menu"></ion-icon>
-      </button>
-    </ion-buttons>
+    <ion-buttons end>
+         <button ion-button icon-only
+                  [navPush]="MenuOpciones">
+            <ion-icon name="more"></ion-icon>
+          </button>
+      </ion-buttons>
   </ion-navbar>
 
 </ion-header>
@@ -20,35 +21,70 @@
 
 <ion-content padding  class="background">
   <ion-list >
-  <ion-item>
+    <ion-item>
+     <ion-label color="blanco">Grupos vinculados</ion-label>
+     <ion-select [(ngModel)]="gaming" interface="popover">
+       <ion-option value="nes">@Bandes</ion-option>
+       <ion-option value="n64">@CasaCultura</ion-option>
+       <ion-option value="ps">@Familia</ion-option>
+     </ion-select>
+   </ion-item>
+  <ion-item >
+    <ion-note item-start>
+       <h4>1</h4>
+    </ion-note>
+    <button ion-button clear item-start  class="oro"><ion-icon name='trophy'></ion-icon></button>
     <h2>@Julio</h2>
     <ion-note item-end>
        10
-       </ion-note>
+    </ion-note>
+    <button ion-button clear item-end [navPush]="QuinielaGrupo">  <ion-icon name="clipboard"></ion-icon></button>
+
   </ion-item>
   <ion-item>
+    <ion-note item-start>
+       <h4>2</h4>
+    </ion-note>
+    <button ion-button clear item-start class="plata"><ion-icon name='trophy'></ion-icon></button>
     <h2>@Vaneska</h2>
     <ion-note item-end>
        12
-       </ion-note>
+    </ion-note>
+    <button ion-button clear item-end [navPush]="QuinielaGrupo">  <ion-icon name="clipboard"></ion-icon></button>
   </ion-item>
   <ion-item>
+    <ion-note item-start>
+       <h4>3</h4>
+    </ion-note>
+    <button ion-button clear item-start class="bronce"><ion-icon name='trophy'></ion-icon></button>
     <h2>@Edgar</h2>
     <ion-note item-end>
        9
-       </ion-note>
+    </ion-note>
+    <button ion-button clear item-end [navPush]="QuinielaGrupo">  <ion-icon name="clipboard"></ion-icon></button>
   </ion-item>
   <ion-item>
+    <ion-note item-start>
+       <h4>4</h4>
+    </ion-note>
+    <button ion-button clear item-start color="handdown"><ion-icon name='ios-thumbs-down'></ion-icon></button>
     <h2>@Sonia</h2>
     <ion-note item-end>
        9
        </ion-note>
+       <button ion-button clear item-end [navPush]="QuinielaGrupo">  <ion-icon name="clipboard"></ion-icon></button>
+
   </ion-item>
   <ion-item>
+    <ion-note item-start>
+       <h4>5</h4>
+    </ion-note>
+    <button ion-button clear item-start color="handdown"><ion-icon name='ios-thumbs-down'></ion-icon></button>
     <h2>@Barbara</h2>
     <ion-note item-end>
        9
-       </ion-note>
+    </ion-note>
+    <button ion-button clear item-end [navPush]="QuinielaGrupo">  <ion-icon name="clipboard"></ion-icon></button>
   </ion-item>
 </ion-list>
 

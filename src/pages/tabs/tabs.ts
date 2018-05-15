@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { HomePage, PosicionesPage,RegistroPage } from "../index.paginas";
+import { IonicPage } from 'ionic-angular';
+import { HomePage,PosicionesPage,RegistroPage,SimuladorPage } from "../index.paginas";
 /**
  * Generated class for the TabsPage page.
  *
@@ -14,10 +14,12 @@ import { HomePage, PosicionesPage,RegistroPage } from "../index.paginas";
   templateUrl: 'tabs.html',
 })
 export class TabsPage {
-   Pronosticos:any = HomePage;
-   Posiciones:any = PosicionesPage;
-   Registro:any = RegistroPage;
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+   Quiniela:any = HomePage;
+   Posicion:any = PosicionesPage;
+   Grupo:any = RegistroPage;
+   Simulador:any = SimuladorPage;
+
+  constructor() {
   }
 
   ionViewDidLoad() {

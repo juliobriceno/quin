@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
+import { MenuopcionesPage,QuinielagrupoPage } from "../index.paginas";
 /**
  * Generated class for the PosicionesPage page.
  *
@@ -14,7 +14,8 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   templateUrl: 'posiciones.html',
 })
 export class PosicionesPage {
-
+  MenuOpciones:any = MenuopcionesPage;
+  QuinielaGrupo:any = QuinielagrupoPage;
   constructor(public navCtrl: NavController, public navParams: NavParams) {
   }
 

@@ -5,7 +5,7 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { MyApp } from './app.component';
-import {HomePage,PosicionesPage,TabsPage,RegistroPage,MenuopcionesPage} from '../pages/index.paginas';
+import {HomePage,PosicionesPage,TabsPage,RegistroPage,MenuopcionesPage,PerfilPage,ContrasenaPage,QuinielagrupoPage,RecuperarcontrasenaPage,SimuladorPage} from '../pages/index.paginas';
 import { SharedObjectsProvider } from '../providers/shared-objects/shared-objects';
 
 import { GropByPipe } from '../pipes/grop-by/grop-by';
@@ -18,6 +18,11 @@ import { GropByPipe } from '../pipes/grop-by/grop-by';
     RegistroPage,
     TabsPage,
     MenuopcionesPage,
+    PerfilPage,
+    ContrasenaPage,
+    QuinielagrupoPage,
+    RecuperarcontrasenaPage,
+    SimuladorPage,
     GropByPipe
   ],
   imports: [
@@ -32,7 +37,12 @@ import { GropByPipe } from '../pipes/grop-by/grop-by';
     PosicionesPage,
     RegistroPage,
     TabsPage,
-    MenuopcionesPage
+    PerfilPage,
+    ContrasenaPage,
+    QuinielagrupoPage,
+    MenuopcionesPage,
+    SimuladorPage,
+    RecuperarcontrasenaPage
   ],
   providers: [
     StatusBar,

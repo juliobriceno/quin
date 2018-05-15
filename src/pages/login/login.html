@@ -35,10 +35,10 @@
                   <ion-icon name="lock" color="gray" small item-left></ion-icon>
                 </ion-item>
               </ion-list>
-              <button (click) ="Login();" ion-button block large color="primary"
+              <button (click) ="Login();" ion-button block large color="primary"  [navPush]="tab1"
                     >
                 Ingresar</button>
-              <ion-item (click) ="RecoverPassword();" class="bg-transparent">
+              <ion-item [navPush]="RecuperarContrasena" class="bg-transparent">
                 <p class="title-forgot">¿Olvidó su contraseña? <a>presione aquí</a></p>
               </ion-item>
             </ion-col>

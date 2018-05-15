@@ -1,4 +1,4 @@
-page-posiciones {
+page-recuperarcontrasena {
   .background{
     background:url('../assets/background-fifa2018.png');
     background-color: red;
@@ -27,27 +27,16 @@ page-posiciones {
     text-indent: 0;
     color: white;
   }
-.ion-label{
-    color: white;
-}
-.text-label{
-    color: white;
-}
-ion-icon {
-      font-size: 1.8em; //Preferred size here
+
+  .item-input-has-focus .label-md[floating], .input-has-focus .label-md[floating]{
+    color: white; //label color when focusing
+  }
+  .item-input .label-md{
+    color: white; //label color
   }
 
-  .plata{
-    color: 	#a5a5a5;
+  .item-ios{
+    color: white; //floating input label color
   }
-  .oro{
-    color: #EECC22;
-  }
-  .bronce{
-    color:#e0a24d;
-  }
-.handdown{
-  color: #E5E5E5;
-}
 
 }
