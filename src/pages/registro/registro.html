@@ -25,29 +25,22 @@
       <ion-col col-12>
         <ion-list no-lines padding-top>
           <ion-item>
-            <ion-input type="text" placeholder="Nombre grupo" clearInput="true"></ion-input>
+            <ion-input [(ngModel)]="newGroupName" type="text" placeholder="Nombre grupo" clearInput="true"></ion-input>
             <ion-icon name="clipboard" color="gray" small item-left></ion-icon>
-            <button ion-button small item-end color="blumundial"><ion-icon name='add'></ion-icon></button>
+            <button (click) ="AddGroup();" ion-button small item-end color="blumundial"><ion-icon name='add'></ion-icon></button>
           </ion-item>
         </ion-list>
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col>
-        <ion-list >
+        <ion-list>
 
-          <ion-item>
-            @Bandes
-            <button ion-button clear item-end><ion-icon name='close'></ion-icon></button>
+          <ion-item *ngFor="let Group of User.Groups">
+            {{Group.Name}}
+            <button (click) ="DeleteGroup(Group.Name);" ion-button clear item-end><ion-icon name='close'></ion-icon></button>
           </ion-item>
-          <ion-item>
-            @CasaCultura
-            <button ion-button clear item-end><ion-icon name='close'></ion-icon></button>
-          </ion-item>
-          <ion-item>
-            @Familia
-            <button ion-button clear item-end><ion-icon name='close'></ion-icon></button>
-          </ion-item>
+
         </ion-list>
       </ion-col>
     </ion-row>

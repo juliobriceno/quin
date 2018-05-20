@@ -2,7 +2,7 @@
   <ion-navbar color="rojo">
     <ion-title> Rusia 2018 </ion-title>
     <ion-buttons end>
-        <button ion-button icon-only
+        <button (click) ="UpdateUser();" ion-button icon-only
                 [navPush]="tab10">
           <ion-icon name="checkmark"></ion-icon>
           Listo
@@ -27,7 +27,7 @@
                 <img src="{{Game.homeflag}}">
               </ion-avatar>
                <ion-label floating>{{Game.homename}}</ion-label>
-              <ion-input [(ngModel)]="GameGroup.value[in].homegoal" type="number" (keypress)="keyPress($event);" ></ion-input>
+              <ion-input [(ngModel)]="Game.homegoal" type="number" (keypress)="keyPress($event);" ></ion-input>
             </ion-item>
           </ion-col>
           <ion-col col>
@@ -36,7 +36,7 @@
                 <img src="{{Game.visitorflag}}">
               </ion-avatar>
                <ion-label floating>{{Game.visitorname}}</ion-label>
-              <ion-input [(ngModel)]="GameGroup.value[in].visitorgoal" type="number" (keypress)="keyPress($event);" ></ion-input>
+              <ion-input [(ngModel)]="Game.visitorgoal" type="number" (keypress)="keyPress($event);" ></ion-input>
             </ion-item>
           </ion-col>
         </ion-row>

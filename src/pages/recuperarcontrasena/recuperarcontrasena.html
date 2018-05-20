@@ -9,10 +9,10 @@
   <ion-navbar color="rojo">
     <ion-title>Recuperar contraseña</ion-title>
     <ion-buttons end>
-        <button ion-button icon-only
+        <button (click) ="RecoverPassword();" ion-button icon-only
                 [navPush]="tab10">
           <ion-icon name="checkmark"></ion-icon>
-        
+
         </button>
 
       </ion-buttons>
@@ -26,10 +26,12 @@
     <ion-row>
       <ion-col col-12>
         <ion-list no-lines padding-top>
-          <ion-item>
-            <ion-input type="text" placeholder="Correo" clearInput="true"></ion-input>
-            <ion-icon name="mail" color="gray" small item-left></ion-icon>
-          </ion-item>
+          <form [formGroup]="LoginForm">
+            <ion-item>
+              <ion-input [(ngModel)]="UserLogin.Email" type="text" formControlName="Email" type="text" placeholder="Correo" [class.errorstyle]="!LoginForm.controls.Email.valid" clearInput="true" ></ion-input>
+              <ion-icon name="mail" color="gray" small item-left></ion-icon>
+            </ion-item>
+          </form>
 
         </ion-list>
       </ion-col>

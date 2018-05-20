@@ -54,61 +54,6 @@ export class LoginPage {
     };
   }
 
-  RecoverPassword(){
-
-    if (!this.LoginForm.controls.Email.valid) {
-      let alert = this.alertCtrl.create({
-        title: 'Oops!',
-        subTitle: 'Por favor revisa los campos con error.',
-        buttons: ['Ok']
-      });
-      alert.present();
-      return 0;
-    }
-
-    let mUrl = url + 'public/RecoverPassword';
-
-    const body = {User: this.UserLogin};
-
-    let loading = this.loadingCtrl.create({
-      content: 'Working...',
-      spinner: 'ios'
-    });
-
-    loading.present();
-
-    this.http
-      .post( mUrl, body ).subscribe(res => {
-        loading.dismiss();
-        if (res.json().result == 'userExist' ){
-          let alert = this.alertCtrl.create({
-            title: 'Oops!',
-            subTitle: 'El usuario no existe. Ya te registraste?',
-            buttons: ['Ok']
-          });
-          alert.present();
-        }
-        else if (res.json().result == 'error'){
-          let alert = this.alertCtrl.create({
-            title: 'Oops!',
-            subTitle: 'Ocurrió un error inesperado.',
-            buttons: ['Ok']
-          });
-          alert.present();
-        }
-        else {
-          let alert = this.alertCtrl.create({
-            title: 'Genial!',
-            subTitle: 'Hemos enviado una contraseña temporal a tu correo.',
-            buttons: ['Ok']
-          });
-          alert.present();
-        }
-      }
-    )
-
-  }
-
   Login() {
 
     if (!this.LoginForm.valid) {
@@ -136,6 +81,7 @@ export class LoginPage {
       .post( mUrl, body ).subscribe(res => {
         loading.dismiss();
         if (res.json().result == 'ok' ){
+          this.ctrlSharedObjectsProvider.setUser(res.json().User);
           this.navCtrl.push( TabsPage )
         }
         else{

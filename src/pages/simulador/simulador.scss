@@ -1,4 +1,5 @@
 page-simulador {
+
   .background{
     background:url('../assets/background-fifa2018.png');
     background-color: red;
@@ -9,5 +10,35 @@ page-simulador {
     background-repeat: no-repeat;
     background-size: cover;
   }
+
+  .item-md{
+    background-color: transparent;
+    color:#fff;
+  }
+
+  .text-input::-moz-placeholder {
+    color: white;
+  }
+
+  .text-input:-ms-input-placeholder {
+    color: white;
+  }
+
+  .text-input::-webkit-input-placeholder {
+    text-indent: 0;
+    color: white;
+  }
+
+  .item-input-has-focus .label-md[floating], .input-has-focus .label-md[floating]{
+    color: white; //label color when focusing
+  }
+  .item-input .label-md{
+    color: white; //label color
+  }
+
+  .item-ios{
+    color: white; //floating input label color
+  }
+
 
 }

@@ -38,4 +38,53 @@ export class HomePage {
     }
   }
 
+  UpdateUser() {
+
+    let mUrl = url + 'api/UpdateUser';
+
+    this.User.Games.forEach(function(eachGame){
+
+      if (typeof eachGame.homegoal == 'string' && eachGame.homegoal.trim() == '' ){
+        eachGame.homegoal = 0;
+      }
+      if (typeof eachGame.visitorgoal == 'string' && eachGame.visitorgoal.trim() == '' ){
+        eachGame.visitorgoal = 0;
+      }
+    })
+
+    const body = {User: this.User};
+
+    let loading = this.loadingCtrl.create({
+      content: 'Working...',
+      spinner: 'ios'
+    });
+
+    loading.present();
+
+    this.http
+      .post( mUrl, body ).subscribe(res => {
+        loading.dismiss();
+        if (res.json().result == 'ok' ){
+          this.ctrlSharedObjectsProvider.setUser(res.json().User);
+          let alert = this.alertCtrl.create({
+            title: 'Ready!',
+            subTitle: 'Los datos fueron actualizados...',
+            buttons: ['Ok']
+          });
+          alert.present();
+        }
+        else
+        {
+          let alert = this.alertCtrl.create({
+            title: 'Oops!',
+            subTitle: 'El usuario no existe. Ya te registraste?',
+            buttons: ['Ok']
+          });
+          alert.present();
+        }
+      }
+    )
+
+  }
+
 }

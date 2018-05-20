@@ -9,7 +9,7 @@
   <ion-navbar  color="rojo">
     <ion-title>Simulador</ion-title>
     <ion-buttons end>
-        <button ion-button icon-only
+        <button (click) ="UpdateUser();" ion-button icon-only
                 [navPush]="tab10">
           <ion-icon name="checkmark"></ion-icon>
           Listo
@@ -24,7 +24,41 @@
 </ion-header>
 
 
-<ion-content padding  class="background">
+<ion-content  class="background" >
+  <ion-grid>
+    <ion-list inset>
+
+      <ion-item-group *ngFor="let GameGroup of User.DummyGames | gropBy:'gamedate'" >
+        <ion-item-divider> <h2>{{GameGroup.key}}</h2></ion-item-divider>
+        <ion-row *ngFor="let Game of GameGroup.value; let in = index" >
+          <ion-col col>
+            <ion-item>
+              <ion-avatar item-left>
+                <img src="{{Game.homeflag}}">
+              </ion-avatar>
+               <ion-label floating>{{Game.homename}}</ion-label>
+              <ion-input [(ngModel)]="Game.homegoal" type="number" (keypress)="keyPress($event);" ></ion-input>
+            </ion-item>
+          </ion-col>
+          <ion-col col>
+            <ion-item>
+              <ion-avatar item-left>
+                <img src="{{Game.visitorflag}}">
+              </ion-avatar>
+               <ion-label floating>{{Game.visitorname}}</ion-label>
+              <ion-input [(ngModel)]="Game.visitorgoal" type="number" (keypress)="keyPress($event);" ></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-item-group>
+
+    </ion-list>
 
 
+  </ion-grid>
+  <!-- <ion-footer>
+  <ion-toolbar>
+  <button ion-button full>Guardar</button>
+</ion-toolbar>
+</ion-footer> -->
 </ion-content>

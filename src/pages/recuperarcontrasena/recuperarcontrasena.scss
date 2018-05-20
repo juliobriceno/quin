@@ -1,42 +1,59 @@
 page-recuperarcontrasena {
-  .background{
-    background:url('../assets/background-fifa2018.png');
-    background-color: red;
-    width: 100%;
-    height: 100%;
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-  }
+  /*  ion-navbar{
+      background-image: url('../assets/img/bg.jpg');
+      background-size:100% auto;
+    }*/
+    .background{
+      background:url('../assets/background-fifa2018.png');
+      background-color: red;
+      width: 100%;
+      height: 100%;
+      background-attachment: fixed;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
 
-  .item-md{
-    background-color: transparent;
-    color:#fff;
-  }
+    .item{
+      margin-bottom: 5px;
+    }
 
-  .text-input::-moz-placeholder {
-    color: white;
-  }
+    ion-card.card{
+    //  margin-top: 50px;
+      background: rgba(255, 255, 255, 0.7);
+    }
+    .logo{
+      margin-top: 5%;
+      margin-bottom: 1%;
+    }
+    .toolbar {
+        .toolbar-background {
+          background: transparent !important;
+        }
+      }
 
-  .text-input:-ms-input-placeholder {
-    color: white;
-  }
+    .titulo{
+      color: white;
+      font-weight: 400;
+    }
 
-  .text-input::-webkit-input-placeholder {
-    text-indent: 0;
-    color: white;
-  }
+    .title-segment{
+      color: #fff;
+      font-size: 1em;
+    }
+    .title-forgot{
+      color: #fff;
+    }
 
-  .item-input-has-focus .label-md[floating], .input-has-focus .label-md[floating]{
-    color: white; //label color when focusing
-  }
-  .item-input .label-md{
-    color: white; //label color
-  }
+    .bg-transparent{
+      background: transparent !important;
+    }
+    .item.item-input {
+      opacity: 0.7;
+    }
 
-  .item-ios{
-    color: white; //floating input label color
-  }
+    .errorstyle{
+      border-bottom: 2px solid red;
+    }
 
 }

@@ -9,7 +9,7 @@
   <ion-navbar color="rojo">
     <ion-title>Editar perfil</ion-title>
     <ion-buttons end>
-        <button ion-button icon-only
+        <button (click) ="UpdateUser();" ion-button icon-only
                 [navPush]="tab10">
           <ion-icon name="checkmark"></ion-icon>
 
@@ -28,7 +28,7 @@
         <ion-list no-lines padding-top>
 
           <ion-item>
-            <ion-input type="text" placeholder="Alias" clearInput="true"></ion-input>
+            <ion-input [(ngModel)]="User.Alias" type="text" placeholder="Alias" clearInput="true"></ion-input>
             <ion-icon name="person" color="gray" small item-left></ion-icon>
           </ion-item>
 

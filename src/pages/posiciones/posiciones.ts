@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
+import { Http } from '@angular/http';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { MenuopcionesPage,QuinielagrupoPage } from "../index.paginas";
-/**
- * Generated class for the PosicionesPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { HomePage, MenuopcionesPage, QuinielagrupoPage } from "../index.paginas";
+import { AlertController, LoadingController } from 'ionic-angular';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+
+import { url } from "../../config/url.config"
+
+import { SharedObjectsProvider } from '../../providers/shared-objects/shared-objects';
+import { GropByPipe } from '../../pipes/grop-by/grop-by';
+
 
 @IonicPage()
 @Component({
@@ -14,13 +17,19 @@ import { MenuopcionesPage,QuinielagrupoPage } from "../index.paginas";
   templateUrl: 'posiciones.html',
 })
 export class PosicionesPage {
+  User = { Groups: [] };
   MenuOpciones:any = MenuopcionesPage;
   QuinielaGrupo:any = QuinielagrupoPage;
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  selectedGroup:any = {};
+  UsersGroups:any = [];
+  constructor(      public navCtrl: NavController, public navParams: NavParams,
+                    public http: Http, public alertCtrl: AlertController,
+                    public loadingCtrl: LoadingController,
+                    public ctrlSharedObjectsProvider:SharedObjectsProvider) {
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad PosicionesPage');
+  ionViewWillEnter(){
+    this.User = this.ctrlSharedObjectsProvider.getUser();
   }
 
 }
