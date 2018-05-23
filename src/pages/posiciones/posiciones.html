@@ -24,22 +24,22 @@
     <ion-item>
      <ion-label color="blanco">Grupos vinculados</ion-label>
 
-     <ion-select [(ngModel)]="selectedGroup">
-         <ion-option *ngFor="let Group of User.Groups">
-             {{ Group.Name }}
-         </ion-option>
+     <ion-select [(ngModel)]="selectedGroup" (ionChange)="groupChange($event)">
+       <ion-option *ngFor="let Group of User.Groups">
+         {{ Group.Name }}
+       </ion-option>
      </ion-select>
 
    </ion-item>
 
-  <ion-item *ngFor="let UserGroup of UsersGroups">
+  <ion-item *ngFor="let UserPlayer of CurrentUsersPlayers">
     <ion-note item-start>
-       <h4>{{UserGroup.Alias}}</h4>
+       <h4>{{1}}</h4>
     </ion-note>
     <button ion-button clear item-start class="plata"><ion-icon name='trophy'></ion-icon></button>
-    <h2>{{UserGroup.Alias}}</h2>
+    <h2>{{UserPlayer.Alias}}</h2>
     <ion-note item-end>
-       {{UserGroup.Alias}}
+       {{UserPlayer.Score}}
     </ion-note>
     <button ion-button clear item-end [navPush]="QuinielaGrupo">  <ion-icon name="clipboard"></ion-icon></button>
   </ion-item>

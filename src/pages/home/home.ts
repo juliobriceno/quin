@@ -42,15 +42,15 @@ export class HomePage {
 
     let mUrl = url + 'api/UpdateUser';
 
-    this.User.Games.forEach(function(eachGame){
-
-      if (typeof eachGame.homegoal == 'string' && eachGame.homegoal.trim() == '' ){
-        eachGame.homegoal = 0;
-      }
-      if (typeof eachGame.visitorgoal == 'string' && eachGame.visitorgoal.trim() == '' ){
-        eachGame.visitorgoal = 0;
-      }
-    })
+    // this.User.Games.forEach(function(eachGame){
+    //
+    //   if (typeof eachGame.homegoal == 'string' && eachGame.homegoal.trim() == '' ){
+    //     eachGame.homegoal = 0;
+    //   }
+    //   if (typeof eachGame.visitorgoal == 'string' && eachGame.visitorgoal.trim() == '' ){
+    //     eachGame.visitorgoal = 0;
+    //   }
+    // })
 
     const body = {User: this.User};
 
