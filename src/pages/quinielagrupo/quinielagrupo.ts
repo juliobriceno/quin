@@ -9,6 +9,8 @@ import { url } from "../../config/url.config"
 
 import { SharedObjectsProvider } from '../../providers/shared-objects/shared-objects';
 import { GropByPipe } from '../../pipes/grop-by/grop-by';
+import * as _ from 'lodash';
+
 
 @IonicPage()
 @Component({
@@ -26,46 +28,7 @@ export class QuinielagrupoPage {
 
 
     ionViewWillEnter(){
-      this.User = this.ctrlSharedObjectsProvider.getUser();
-    }
-
-    UpdateUser() {
-
-      let mUrl = url + 'api/UpdateUser';
-
-      const body = {User: this.User};
-
-      let loading = this.loadingCtrl.create({
-        content: 'Working...',
-        spinner: 'ios'
-      });
-
-      loading.present();
-
-      this.http
-        .post( mUrl, body ).subscribe(res => {
-          loading.dismiss();
-          if (res.json().result == 'ok' ){
-            this.ctrlSharedObjectsProvider.setUser(res.json().User);
-            let alert = this.alertCtrl.create({
-              title: 'Ready!',
-              subTitle: 'Los datos fueron actualizados...',
-              buttons: ['Ok']
-            });
-            alert.present();
-          }
-          else
-          {
-            let alert = this.alertCtrl.create({
-              title: 'Oops!',
-              subTitle: 'El usuario no existe. Ya te registraste?',
-              buttons: ['Ok']
-            });
-            alert.present();
-          }
-        }
-      )
-
+      this.User = this.ctrlSharedObjectsProvider.getanotherUser();
     }
 
 }

@@ -10,6 +10,9 @@ import { SharedObjectsProvider } from '../providers/shared-objects/shared-object
 
 import { GropByPipe } from '../pipes/grop-by/grop-by';
 
+import { BackgroundMode } from '@ionic-native/background-mode';
+import { LocalNotifications } from '@ionic-native/local-notifications';
+
 @NgModule({
   declarations: [
     MyApp,
@@ -48,7 +51,9 @@ import { GropByPipe } from '../pipes/grop-by/grop-by';
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    SharedObjectsProvider
+    SharedObjectsProvider,
+    BackgroundMode,
+    LocalNotifications    
   ]
 })
 export class AppModule {}

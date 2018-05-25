@@ -10,6 +10,9 @@ import { url } from "../../config/url.config"
 import { SharedObjectsProvider } from '../../providers/shared-objects/shared-objects';
 import { GropByPipe } from '../../pipes/grop-by/grop-by';
 
+import { LocalNotifications } from '@ionic-native/local-notifications';
+import { Platform } from 'ionic-angular';
+
 
 @IonicPage()
 @Component({
@@ -27,12 +30,24 @@ export class PosicionesPage {
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
                     public loadingCtrl: LoadingController,
-                    public ctrlSharedObjectsProvider:SharedObjectsProvider) {
+                    public ctrlSharedObjectsProvider:SharedObjectsProvider,
+                    public localNotifications: LocalNotifications,
+                    public platform: Platform) {
   }
 
   ionViewWillEnter(){
     this.User = this.ctrlSharedObjectsProvider.getUser();
-    this.GetUsersGroups();
+    if (this.ctrlSharedObjectsProvider.getRefreshPosition() == true){
+      this.GetUsersGroups();
+    }
+  }
+
+  showOtherUserInfo(userEmail){
+    var antoherUser = this.UsersGroups.filter(function(eachUser){
+      return eachUser.Email == userEmail;
+    })[0];
+    this.ctrlSharedObjectsProvider.setanotherUser(antoherUser);
+    this.navCtrl.push( QuinielagrupoPage );
   }
 
   groupChange(selectedValue: any) {
@@ -74,6 +89,7 @@ export class PosicionesPage {
       Data.Users.forEach(function(User){
         var UserPlayer = {};
         UserPlayer.Alias = User.Alias;
+        UserPlayer.Email = User.Email;
         UserPlayer.Score = 0;
         UserPlayer.GroupName = eachGroup.Name;
         UserPlayer.BetBy = userEmail;
@@ -121,39 +137,19 @@ export class PosicionesPage {
         })
         self.UsersPlayers.push(UserPlayer);
       })
-      // Ordena de menor a mayor
-      self.UsersPlayers = _.orderBy(self.UsersPlayers, ['Score'],['desc']);
-      // Calcula la posición de jugador actual y la notifica.
-      var positionCount = 1;
-      var scoresCount = 0;
-
-      // try {
-      //   UsersPlayers.forEach(function(UserPlayer) {
-      //     // Primer recorrido cuántos puntos lleva el primero si es el usuario abandona el ciclo el usuario actual estaría de primero
-      //     if ( scoresCount == 0 ){
-      //       scoresCount = UsersPlayers.Score;
-      //       if ( UserPlayer.Email == userEmail ){
-      //         throw BreakException;
-      //       }
-      //     }
-      //     else{
-      //       // El score bajó de anterior posición baja una posición
-      //       if ( UsersPlayers.Score < scoresCount ){
-      //         positionCount++;
-      //         if ( UserPlayer.Email == userEmail ){
-      //           throw BreakException;
-      //         }
-      //       }
-      //     }
-      //   });
-      // } catch (e) {
-      // }
 
     })
+
+    this.ctrlSharedObjectsProvider.setRefreshPosition(false);
 
   }
 
     GetUsersGroups() {
+
+      // Si el usuario no está en ningún grupo no hay nada que buscar de posiciones
+      if (this.User.Groups.length == 0){
+        return 0;
+      }
 
       // Una vez ingresa pasa a buscar todos los grupos donde está el usuario y trae todos los resultados de todos los jugadores
 
@@ -190,7 +186,7 @@ export class PosicionesPage {
               self.processResults(self.UsersGroups, User.Email, true );
             });
 
-            console.log(this.UsersPlayers);
+            this.ShowNotifications();
 
           }
           else{
@@ -202,6 +198,129 @@ export class PosicionesPage {
             alert.present();        }
         }
       )
+
+    }
+
+    ShowNotifications(){
+      var allUserPlayers = [];
+      var self = this;
+
+      // Recorre cada uno de los grupos en donde está el usuario actual
+      this.User.Groups.forEach(function(eachUserGroup){
+        // Por cada grupo del usuario actual primero busca la posición del usuario actual en cada grupo
+        // Lo primero es calcular la posición por cada grupo
+        var allUserPlayerByGroup = self.UsersPlayers.filter(function(eachUserGroupResult){
+          return eachUserGroupResult.GroupName == eachUserGroup.Name;
+        })
+        // Extrae los diferentes usuarios/calculos de cada grupo de quiniela
+        var distinctUser = _.uniqBy(self.UsersPlayers, 'BetBy');
+
+        // Por cada Bet de cada usuario agrupa
+        distinctUser.forEach(function(eachBetUser){
+          var allUserPlayerByGroupByBet = allUserPlayerByGroup.filter(function(eachUserGroupResultByBet){
+            return eachUserGroupResultByBet.BetBy == eachBetUser.BetBy;
+          })
+
+          // Por cada grupo, por cada Bet calcula las posiciones
+          var mPosition = 0;
+          var mScore = 99999;
+
+          allUserPlayerByGroupByBet = _.orderBy(allUserPlayerByGroupByBet, ['Score'], ['desc']);
+
+          allUserPlayerByGroupByBet.forEach(function(eachUserByGroupByBet){
+            if (mScore > eachUserByGroupByBet.Score){
+              mPosition++;
+              eachUserByGroupByBet.Position = mPosition;
+              mScore = eachUserByGroupByBet.Score;
+            }
+            else{
+              eachUserByGroupByBet.Position = mPosition;
+            }
+          })
+
+        })
+
+      })
+
+      // Mensaje con la posición del usuario actual en cada uno de los grupos
+      this.UsersPlayers.forEach(function (userPlayer) {
+        if (userPlayer.Email == self.User.Email && userPlayer.BetBy == self.User.Email){
+          if(self.platform.is('cordova')){
+            self.localNotifications.schedule({
+              text: 'Tu posición en el grupo: ' + userPlayer.GroupName + ' es: ' + userPlayer.Position
+            });
+          }
+        }
+      })
+
+      // Recorre cada grupo del usuario actual
+      this.User.Groups.forEach(function(eachUserGroup){
+        // Por cada grupo del usuario actual analiza cada jugador basado en la jugada del jugador actual
+        var allUserPlayerByGroupByBet = self.UsersPlayers.filter(function(eachUserGroupResultByBet){
+          return eachUserGroupResultByBet.GroupName == eachUserGroup.Name;
+        })
+
+        // Agrupa por cada User
+        var allDistintUserPlayerByGroupByBet = _.uniqBy(allUserPlayerByGroupByBet, 'Email');
+
+        // Por cada jugador ve su peor posición posible em el grupo actual
+        allDistintUserPlayerByGroupByBet.forEach(function(UserInGroup){
+          var UserInAllSameGroup = allUserPlayerByGroupByBet.filter(function(eachUserInGroup){
+            return eachUserInGroup.Email ==  UserInGroup.Email;
+          })
+          // La peor posición posible para un User
+          UserInAllSameGroup = _.orderBy(UserInAllSameGroup, ['Position'], ['desc']);
+
+          if (UserInAllSameGroup[0].Position == 1){
+            self.UsersPlayers.forEach(function(eachUserPlayer){
+              if (eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name){
+                eachUserPlayer.Level = 'oro';
+                if(self.platform.is('cordova')){
+                  self.localNotifications.schedule({
+                    text: UserInGroup + ' es el campeón!!!'
+                  });
+                }
+              }
+            })
+          }
+          else if (UserInAllSameGroup[0].Position == 2){
+            self.UsersPlayers.forEach(function(eachUserPlayer){
+              if (eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name){
+                eachUserPlayer.Level = 'plata';
+                if(self.platform.is('cordova')){
+                  self.localNotifications.schedule({
+                    text: UserInGroup + ' es el sub campeón!!!'
+                  });
+                }
+              }
+            })
+          }
+          else if (UserInAllSameGroup[0].Position == 3){
+            self.UsersPlayers.forEach(function(eachUserPlayer){
+              if (eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name){
+                eachUserPlayer.Level = 'bronce';
+                if(selfs.platform.is('cordova')){
+                  self.localNotifications.schedule({
+                    text: UserInGroup + ' aseguró el tercer lugar!!!'
+                  });
+                }
+              }
+            })
+          }
+          else{
+            self.UsersPlayers.forEach(function(eachUserPlayer){
+              if (eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name){
+                eachUserPlayer.Level = 'handdown';
+              }
+            })
+          }
+
+        })
+
+
+      })
+
+      console.log(self.UsersPlayers);
 
     }
 

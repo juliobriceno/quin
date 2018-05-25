@@ -19,6 +19,7 @@ export class RegistroPage {
   User = { };
   MenuOpciones:any = MenuopcionesPage;
   newGroupName = '';
+  deleteGroup = true;
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
                     public loadingCtrl: LoadingController,
@@ -34,6 +35,7 @@ export class RegistroPage {
       this.User.Groups = this.User.Groups.filter(function(userGroup){
         return userGroup.Name != groupName;
       })
+      this.deleteGroup = true;
       this.UpdateUser();
     }
 
@@ -50,6 +52,7 @@ export class RegistroPage {
       let newGroup = { Name:this.newGroupName }
       this.User.Groups.push(newGroup);
       this.newGroupName = '';
+      this.deleteGroup = false;
       this.UpdateUser();
     }
 
@@ -71,12 +74,32 @@ export class RegistroPage {
           loading.dismiss();
           if (res.json().result == 'ok' ){
             this.ctrlSharedObjectsProvider.setUser(res.json().User);
-            let alert = this.alertCtrl.create({
-              title: 'Ready!',
-              subTitle: 'Los datos fueron actualizados...',
-              buttons: ['Ok']
-            });
-            alert.present();
+            if (this.deleteGroup == true){
+              let alert = this.alertCtrl.create({
+                title: 'Ready!',
+                subTitle: 'El grupo fue eliminado...',
+                buttons: ['Ok']
+              });
+              alert.present();
+            }
+            else{
+              if (res.json().newGroup == true ){
+                let alert = this.alertCtrl.create({
+                  title: 'Ready!',
+                  subTitle: 'Has creador un nuevo grupo...',
+                  buttons: ['Ok']
+                });
+                alert.present();
+              }
+              else{
+                let alert = this.alertCtrl.create({
+                  title: 'Ready!',
+                  subTitle: 'Te uniste al grupo...',
+                  buttons: ['Ok']
+                });
+                alert.present();
+              }
+            }
           }
           else
           {

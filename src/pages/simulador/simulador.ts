@@ -65,8 +65,20 @@ export class SimuladorPage {
     this.http
       .post( mUrl, body ).subscribe(res => {
         loading.dismiss();
+
+        // Para que refresque las posiciones cuando vaya
+        this.ctrlSharedObjectsProvider.setRefreshPosition(true);
+
         if (res.json().result == 'ok' ){
           this.ctrlSharedObjectsProvider.setUser(res.json().User);
+
+          let alert = this.alertCtrl.create({
+            title: 'Ready!',
+            subTitle: 'Los datos fueron actualizados...',
+            buttons: ['Ok']
+          });
+          alert.present();
+          
         }
         else
         {

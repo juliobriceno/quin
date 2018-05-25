@@ -10,6 +10,9 @@ import { url } from "../../config/url.config"
 import { SharedObjectsProvider } from '../../providers/shared-objects/shared-objects';
 import { GropByPipe } from '../../pipes/grop-by/grop-by';
 
+import { Platform } from 'ionic-angular';
+import { BackgroundMode } from '@ionic-native/background-mode';
+
 
 @Component({
   selector: 'page-home',
@@ -21,8 +24,20 @@ export class HomePage {
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
                     public loadingCtrl: LoadingController,
-                    public ctrlSharedObjectsProvider:SharedObjectsProvider
+                    public ctrlSharedObjectsProvider:SharedObjectsProvider, public backgroundMode: BackgroundMode, public platform: Platform
              )  {
+
+                   if(this.platform.is('cordova')){
+                     platform.ready().then(() => {
+
+                       this.backgroundMode.on('activate').subscribe(() => {
+
+                       });
+
+                       this.backgroundMode.enable();
+                     })
+                   }
+
                 }
 
   ionViewWillEnter(){
@@ -64,6 +79,10 @@ export class HomePage {
     this.http
       .post( mUrl, body ).subscribe(res => {
         loading.dismiss();
+
+        // Para que refresque las posiciones cuando vaya
+        this.ctrlSharedObjectsProvider.setRefreshPosition(true);
+
         if (res.json().result == 'ok' ){
           this.ctrlSharedObjectsProvider.setUser(res.json().User);
           let alert = this.alertCtrl.create({

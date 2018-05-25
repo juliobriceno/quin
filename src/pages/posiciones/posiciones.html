@@ -34,14 +34,14 @@
 
   <ion-item *ngFor="let UserPlayer of CurrentUsersPlayers">
     <ion-note item-start>
-       <h4>{{1}}</h4>
+       <h4>{{UserPlayer.Position}}</h4>
     </ion-note>
-    <button ion-button clear item-start class="plata"><ion-icon name='trophy'></ion-icon></button>
+    <button ion-button clear item-start [ngClass]="UserPlayer.Level"><ion-icon name='trophy'></ion-icon></button>
     <h2>{{UserPlayer.Alias}}</h2>
     <ion-note item-end>
        {{UserPlayer.Score}}
     </ion-note>
-    <button ion-button clear item-end [navPush]="QuinielaGrupo">  <ion-icon name="clipboard"></ion-icon></button>
+    <button (click) ="showOtherUserInfo(UserPlayer.Email);" ion-button clear item-end >  <ion-icon name="clipboard"></ion-icon></button>
   </ion-item>
 </ion-list>
 
