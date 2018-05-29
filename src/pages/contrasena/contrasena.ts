@@ -16,7 +16,7 @@ import { GropByPipe } from '../../pipes/grop-by/grop-by';
   templateUrl: 'contrasena.html',
 })
 export class ContrasenaPage {
-  User = { };
+  User = { Password: '', ConfirmPassword: '' };
 
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,

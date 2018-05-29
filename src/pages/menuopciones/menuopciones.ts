@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Http } from '@angular/http';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { HomePage, MenuopcionesPage } from "../index.paginas";
+import { HomePage, PerfilPage, ContrasenaPage } from "../index.paginas";
 import { AlertController, LoadingController } from 'ionic-angular';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -10,6 +10,7 @@ import { url } from "../../config/url.config"
 import { SharedObjectsProvider } from '../../providers/shared-objects/shared-objects';
 import { GropByPipe } from '../../pipes/grop-by/grop-by';
 
+import { Platform } from 'ionic-angular';
 
 
 @IonicPage()
@@ -18,13 +19,11 @@ import { GropByPipe } from '../../pipes/grop-by/grop-by';
   templateUrl: 'menuopciones.html',
 })
 export class MenuopcionesPage {
-  Perfil:any =  PerfilPage;
-  Contrasena:any =  ContrasenaPage;
 
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
                     public loadingCtrl: LoadingController,
-                    public ctrlSharedObjectsProvider:SharedObjectsProvider) {
+                    public ctrlSharedObjectsProvider:SharedObjectsProvider, public platform: Platform) {
   }
 
   closeSession() {

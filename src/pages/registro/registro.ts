@@ -16,7 +16,7 @@ import { GropByPipe } from '../../pipes/grop-by/grop-by';
   templateUrl: 'registro.html',
 })
 export class RegistroPage {
-  User = { };
+  User = { Groups: [] };
   MenuOpciones:any = MenuopcionesPage;
   newGroupName = '';
   deleteGroup = true;

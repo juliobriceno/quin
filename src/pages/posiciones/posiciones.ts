@@ -13,6 +13,8 @@ import { GropByPipe } from '../../pipes/grop-by/grop-by';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { Platform } from 'ionic-angular';
 
+import * as _ from 'lodash';
+
 
 @IonicPage()
 @Component({
@@ -20,7 +22,7 @@ import { Platform } from 'ionic-angular';
   templateUrl: 'posiciones.html',
 })
 export class PosicionesPage {
-  User = { Groups: [] };
+  User = { Groups: [], Email: '' };
   MenuOpciones:any = MenuopcionesPage;
   QuinielaGrupo:any = QuinielagrupoPage;
   selectedGroup:any = {};
@@ -52,6 +54,7 @@ export class PosicionesPage {
 
   groupChange(selectedValue: any) {
     let self = this;
+    this.ctrlSharedObjectsProvider.setActualGroup(selectedValue);
     this.CurrentUsersPlayers = this.UsersPlayers.filter(function(UserPlayer){
       return UserPlayer.GroupName == selectedValue.trim() && UserPlayer.BetBy == self.User.Email;
     })
@@ -59,7 +62,7 @@ export class PosicionesPage {
 
   processResults(pUsers, userEmail, isSimulated){
 
-    var Data = {};
+    var Data = { Users: [] };
     Data.Users = pUsers;
     var self = this;
 
@@ -87,7 +90,7 @@ export class PosicionesPage {
       })[0];
 
       Data.Users.forEach(function(User){
-        var UserPlayer = {};
+        var UserPlayer = { Alias: '', Email: '', Score: 0, GroupName: [], BetBy: '' };
         UserPlayer.Alias = User.Alias;
         UserPlayer.Email = User.Email;
         UserPlayer.Score = 0;
@@ -142,6 +145,13 @@ export class PosicionesPage {
 
     this.ctrlSharedObjectsProvider.setRefreshPosition(false);
 
+    // Lee a ver si había un grupo colocado
+    let actualGroup = this.ctrlSharedObjectsProvider.getActualGroup();
+
+    if (actualGroup != ''){
+      this.groupChange(actualGroup);
+    }
+
   }
 
     GetUsersGroups() {
@@ -177,8 +187,7 @@ export class PosicionesPage {
             this.UsersGroups.forEach(function(User){
               // Cada juego no terminado lo termina con el resultado igual al pronosticado
               User.DummyGames.forEach(function(usrDummyGame){
-                if ( usrDummyGame.IsEnd == false ){
-                  usrDummyGame.IsEnd = true;
+                if (typeof User.Games[usrDummyGame.game] != 'undefined'){
                   usrDummyGame.homegoal = User.Games[usrDummyGame.game].homegoal;
                   usrDummyGame.visitorgoal = User.Games[usrDummyGame.game].visitorgoal;
                 }
@@ -204,6 +213,7 @@ export class PosicionesPage {
     ShowNotifications(){
       var allUserPlayers = [];
       var self = this;
+      let lNotifications = [];
 
       // Recorre cada uno de los grupos en donde está el usuario actual
       this.User.Groups.forEach(function(eachUserGroup){
@@ -246,9 +256,7 @@ export class PosicionesPage {
       this.UsersPlayers.forEach(function (userPlayer) {
         if (userPlayer.Email == self.User.Email && userPlayer.BetBy == self.User.Email){
           if(self.platform.is('cordova')){
-            self.localNotifications.schedule({
-              text: 'Tu posición en el grupo: ' + userPlayer.GroupName + ' es: ' + userPlayer.Position
-            });
+            lNotifications.push({ id: 1, text: 'Tu posición en el grupo: ' + userPlayer.GroupName + ' es: ' + userPlayer.Position });
           }
         }
       })
@@ -276,9 +284,7 @@ export class PosicionesPage {
               if (eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name){
                 eachUserPlayer.Level = 'oro';
                 if(self.platform.is('cordova')){
-                  self.localNotifications.schedule({
-                    text: UserInGroup + ' es el campeón!!!'
-                  });
+                  lNotifications.push({ id: 2, text: UserInGroup.Alias + ' es el campeón!!!' });
                 }
               }
             })
@@ -288,9 +294,7 @@ export class PosicionesPage {
               if (eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name){
                 eachUserPlayer.Level = 'plata';
                 if(self.platform.is('cordova')){
-                  self.localNotifications.schedule({
-                    text: UserInGroup + ' es el sub campeón!!!'
-                  });
+                  lNotifications.push({ id: 3, text: UserInGroup.Alias + ' es el sub campeón!!!' });
                 }
               }
             })
@@ -299,10 +303,8 @@ export class PosicionesPage {
             self.UsersPlayers.forEach(function(eachUserPlayer){
               if (eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name){
                 eachUserPlayer.Level = 'bronce';
-                if(selfs.platform.is('cordova')){
-                  self.localNotifications.schedule({
-                    text: UserInGroup + ' aseguró el tercer lugar!!!'
-                  });
+                if(self.platform.is('cordova')){
+                  lNotifications.push({ id: 4, text: UserInGroup.Alias + ' aseguró el tercer lugar!!!' });
                 }
               }
             })
@@ -314,6 +316,11 @@ export class PosicionesPage {
               }
             })
           }
+
+          console.log('Llegó aquí y mostrará múltiples mensajes');
+          console.log(lNotifications);
+
+          self.localNotifications.schedule( lNotifications );
 
         })
 

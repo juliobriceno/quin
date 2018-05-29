@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Http } from '@angular/http';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { HomePage, TabsPage, RecuperarcontrasenaPage } from "../index.paginas";
+import { HomePage, TabsPage } from "../index.paginas";
 import { AlertController, LoadingController } from 'ionic-angular';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -16,6 +16,7 @@ import { SharedObjectsProvider } from '../../providers/shared-objects/shared-obj
 })
 export class RecuperarcontrasenaPage {
   UserLogin = { "Email": "", "Password": "" };
+  LoginForm: FormGroup;
 
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,

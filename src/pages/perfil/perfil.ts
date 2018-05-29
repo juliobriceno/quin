@@ -16,7 +16,7 @@ import { GropByPipe } from '../../pipes/grop-by/grop-by';
   templateUrl: 'perfil.html',
 })
 export class PerfilPage {
-  User = { };
+  User = { Alias: '' };
 
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,

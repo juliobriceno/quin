@@ -18,7 +18,7 @@ import * as _ from 'lodash';
 })
 export class SimuladorPage {
   MenuOpciones:any = MenuopcionesPage;
-  User = { };
+  User = { DummyGames: [] };
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
                     public loadingCtrl: LoadingController,
@@ -78,7 +78,7 @@ export class SimuladorPage {
             buttons: ['Ok']
           });
           alert.present();
-          
+
         }
         else
         {

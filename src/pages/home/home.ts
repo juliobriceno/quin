@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Http } from '@angular/http';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { HomePage, MenuopcionesPage } from "../index.paginas";
+import { MenuopcionesPage } from "../index.paginas";
 import { AlertController, LoadingController } from 'ionic-angular';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -30,8 +30,10 @@ export class HomePage {
                    if(this.platform.is('cordova')){
                      platform.ready().then(() => {
 
-                       this.backgroundMode.on('activate').subscribe(() => {
+                       console.log('Entró pendiente de un backgroud');
 
+                       this.backgroundMode.on('activate').subscribe(() => {
+                        console.log('Se activó tremendo backgroud');
                        });
 
                        this.backgroundMode.enable();

@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({name: 'gropBy'})
 export class GropByPipe implements PipeTransform {
-    transform(collection: Array, property: string): Array {
+    transform(collection: Array<any>, property: string): Array<any> {
         // prevents the application from breaking if the array of objects doesn't exist yet
         if(!collection) {
             return null;
