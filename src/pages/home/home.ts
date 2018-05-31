@@ -5,6 +5,8 @@ import { MenuopcionesPage } from "../index.paginas";
 import { AlertController, LoadingController } from 'ionic-angular';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
+import { PosicionesPage } from "../index.paginas";
+
 import { url } from "../../config/url.config"
 
 import { SharedObjectsProvider } from '../../providers/shared-objects/shared-objects';
@@ -13,6 +15,8 @@ import { GropByPipe } from '../../pipes/grop-by/grop-by';
 import { Platform } from 'ionic-angular';
 import { BackgroundMode } from '@ionic-native/background-mode';
 
+import { Socket } from 'ng-socket-io';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'page-home',
@@ -20,11 +24,11 @@ import { BackgroundMode } from '@ionic-native/background-mode';
 })
 export class HomePage {
   MenuOpciones:any = MenuopcionesPage;
-  User = { };
+  User = { Email: '' };
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
                     public loadingCtrl: LoadingController,
-                    public ctrlSharedObjectsProvider:SharedObjectsProvider, public backgroundMode: BackgroundMode, public platform: Platform
+                    public ctrlSharedObjectsProvider:SharedObjectsProvider, public backgroundMode: BackgroundMode, public platform: Platform, private socket: Socket
              )  {
 
                    if(this.platform.is('cordova')){
@@ -40,13 +44,37 @@ export class HomePage {
                      })
                    }
 
+                   // Se une al socket por donde recibirá los resultados de los juegos
+                   this.socket.connect();
+                   // Llama a algo de coba
+                   this.socket.emit('set-email', this.User.Email);
+
+                   this.getMsgs().subscribe(data => {
+                     // Al obtener la orden del server procede a llamar a pantalla de resultados
+                     console.log('Llegó aquí debería irse a la otra página');
+                     // Para que refresque las posiciones cuando vaya
+                     this.ctrlSharedObjectsProvider.setRefreshPosition(true);
+                     this.ctrlSharedObjectsProvider.setOwnCalc(false);
+                     this.navCtrl.push( PosicionesPage )
+                   });
+
                 }
+
+  getMsgs() {
+    let observable = new Observable(observer => {
+      this.socket.on('finishedGame', (data) => {
+        observer.next(data);
+      });
+    });
+    return observable;
+  }
 
   ionViewWillEnter(){
     this.User = this.ctrlSharedObjectsProvider.getUser();
   }
 
   keyPress(event: any) {
+
     const pattern = /[0-9]/;
 
     let inputChar = String.fromCharCode(event.charCode);

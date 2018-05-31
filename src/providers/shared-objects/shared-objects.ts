@@ -7,6 +7,7 @@ export class SharedObjectsProvider {
   Games: any = {}
   RefreshPostions: boolean = true;
   ActualGroup = '';
+  OwnCalc = true;
 
   setUser(value) {
     this.User = value;
@@ -46,6 +47,14 @@ export class SharedObjectsProvider {
 
   getActualGroup() {
     return this.ActualGroup;
+  }
+
+  setOwnCalc(value) {
+    this.OwnCalc = value;
+  }
+
+  getOwnCalc() {
+    return this.OwnCalc;
   }
 
 }

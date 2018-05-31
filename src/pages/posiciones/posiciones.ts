@@ -22,13 +22,14 @@ import * as _ from 'lodash';
   templateUrl: 'posiciones.html',
 })
 export class PosicionesPage {
-  User = { Groups: [], Email: '' };
+  User = { Groups: [], Email: '', DummyGames: [] };
   MenuOpciones:any = MenuopcionesPage;
   QuinielaGrupo:any = QuinielagrupoPage;
   selectedGroup:any = {};
   UsersGroups:any = [];
   UsersPlayers = [];
   CurrentUsersPlayers = [];
+  endedGames = [];
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
                     public loadingCtrl: LoadingController,
@@ -174,14 +175,42 @@ export class PosicionesPage {
 
       loading.present();
 
+      var self = this;
+
       this.http
         .post( mUrl, body ).subscribe(res => {
           loading.dismiss();
           if (res.json().result == 'ok' ){
             this.UsersGroups = res.json().UsersGroups;
+            this.endedGames = res.json().endedGames;
+
+            // Si viene con juegos simulados pasa a sobre escribir todos los juegos siempre y cuando no venga de simulaciones propio
+            var mOwnCal = this.ctrlSharedObjectsProvider.getOwnCalc();
+            if (mOwnCal == false){
+              // Recorre cada juego simulado si lo consigue entre los juegos ya definidos los marca como están definidos
+              // caso contrario los deja 0 a 0 sin finalizar
+              this.User.DummyGames.forEach(function(eachUserGame){
+                var lendedGame = this.endedGames.filter(function(endedGame){
+                  return endedGame.game == eachUserGame.game
+                })
+                // Si el juego no existe 0 a 0 sin terminar el juego para permitir editar
+                if (lendedGame.length == 0){
+                  eachUserGame.isEnded = false;
+                  eachUserGame.homegoal = 0;
+                  eachUserGame.visitorgoal = 0;
+                }
+                // Caso contrario coloca el marcador dque viene y el juego lo coloca cerrado para que no pueda editar
+                else{
+                  eachUserGame.isEnded = true;
+                  eachUserGame.homegoal = lendedGame.homegoal;
+                  eachUserGame.visitorgoal = lendedGame.length.visitorgoal;
+                }
+              })
+              this.ctrlSharedObjectsProvider.setUser(self.User);
+            }
+
 
             // El primer procesamiento es con la data actual del user actual
-            var self = this;
             this.UsersPlayers = [];
             // Por cada usuario calcula los resultados basados en todos los resultados faltantes perfectos según su quiniela
             this.UsersGroups.forEach(function(User){

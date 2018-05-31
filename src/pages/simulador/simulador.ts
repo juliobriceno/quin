@@ -68,6 +68,7 @@ export class SimuladorPage {
 
         // Para que refresque las posiciones cuando vaya
         this.ctrlSharedObjectsProvider.setRefreshPosition(true);
+        this.ctrlSharedObjectsProvider.setOwnCalc(true);
 
         if (res.json().result == 'ok' ){
           this.ctrlSharedObjectsProvider.setUser(res.json().User);

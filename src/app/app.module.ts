@@ -13,6 +13,9 @@ import { GropByPipe } from '../pipes/grop-by/grop-by';
 import { BackgroundMode } from '@ionic-native/background-mode';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 
+import { SocketIoModule, SocketIoConfig } from 'ng-socket-io';
+const config: SocketIoConfig = { url: 'http://192.168.1.129:3000', options: {} };
+
 @NgModule({
   declarations: [
     MyApp,
@@ -31,7 +34,8 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
   imports: [
     BrowserModule,
     HttpModule,
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    SocketIoModule.forRoot(config)
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -53,7 +57,7 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     SharedObjectsProvider,
     BackgroundMode,
-    LocalNotifications    
+    LocalNotifications
   ]
 })
 export class AppModule {}
