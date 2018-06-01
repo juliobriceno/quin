@@ -20,6 +20,7 @@ export class RegistroPage {
   MenuOpciones:any = MenuopcionesPage;
   newGroupName = '';
   deleteGroup = true;
+  fromGroup = false;
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
                     public loadingCtrl: LoadingController,
@@ -36,6 +37,7 @@ export class RegistroPage {
         return userGroup.Name != groupName;
       })
       this.deleteGroup = true;
+      this.fromGroup = true;
       this.UpdateUser();
     }
 
@@ -74,30 +76,40 @@ export class RegistroPage {
           loading.dismiss();
           if (res.json().result == 'ok' ){
             this.ctrlSharedObjectsProvider.setUser(res.json().User);
-            if (this.deleteGroup == true){
+            if (this.fromGroup == false){
               let alert = this.alertCtrl.create({
                 title: 'Ready!',
-                subTitle: 'El grupo fue eliminado...',
+                subTitle: 'Cambiaste el tipo de juego del grupo.',
                 buttons: ['Ok']
               });
               alert.present();
             }
             else{
-              if (res.json().newGroup == true ){
+              if (this.deleteGroup == true){
                 let alert = this.alertCtrl.create({
                   title: 'Ready!',
-                  subTitle: 'Has creador un nuevo grupo...',
+                  subTitle: 'El grupo fue eliminado...',
                   buttons: ['Ok']
                 });
                 alert.present();
               }
               else{
-                let alert = this.alertCtrl.create({
-                  title: 'Ready!',
-                  subTitle: 'Te uniste al grupo...',
-                  buttons: ['Ok']
-                });
-                alert.present();
+                if (res.json().newGroup == true ){
+                  let alert = this.alertCtrl.create({
+                    title: 'Ready!',
+                    subTitle: 'Has creador un nuevo grupo...',
+                    buttons: ['Ok']
+                  });
+                  alert.present();
+                }
+                else{
+                  let alert = this.alertCtrl.create({
+                    title: 'Ready!',
+                    subTitle: 'Te uniste al grupo...',
+                    buttons: ['Ok']
+                  });
+                  alert.present();
+                }
               }
             }
           }
@@ -110,6 +122,7 @@ export class RegistroPage {
             });
             alert.present();
           }
+          this.fromGroup = false;
         }
       )
 

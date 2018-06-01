@@ -5,7 +5,7 @@ import { MenuopcionesPage } from "../index.paginas";
 import { AlertController, LoadingController } from 'ionic-angular';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
-import { PosicionesPage } from "../index.paginas";
+import { PosicionesPage, TabsPage } from "../index.paginas";
 
 import { url } from "../../config/url.config"
 
@@ -18,6 +18,8 @@ import { BackgroundMode } from '@ionic-native/background-mode';
 import { Socket } from 'ng-socket-io';
 import { Observable } from 'rxjs/Observable';
 
+import { App } from 'ionic-angular';
+
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
@@ -28,7 +30,7 @@ export class HomePage {
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
                     public loadingCtrl: LoadingController,
-                    public ctrlSharedObjectsProvider:SharedObjectsProvider, public backgroundMode: BackgroundMode, public platform: Platform, private socket: Socket
+                    public ctrlSharedObjectsProvider:SharedObjectsProvider, public backgroundMode: BackgroundMode, public platform: Platform, private socket: Socket, public app: App
              )  {
 
                    if(this.platform.is('cordova')){
@@ -52,10 +54,11 @@ export class HomePage {
                    this.getMsgs().subscribe(data => {
                      // Al obtener la orden del server procede a llamar a pantalla de resultados
                      console.log('Llegó aquí debería irse a la otra página');
+                     console.log(this.app.getActiveNav());
                      // Para que refresque las posiciones cuando vaya
                      this.ctrlSharedObjectsProvider.setRefreshPosition(true);
                      this.ctrlSharedObjectsProvider.setOwnCalc(false);
-                     this.navCtrl.push( PosicionesPage )
+                     this.navCtrl.parent.select(2);
                    });
 
                 }
@@ -86,16 +89,6 @@ export class HomePage {
   UpdateUser() {
 
     let mUrl = url + 'api/UpdateUser';
-
-    // this.User.Games.forEach(function(eachGame){
-    //
-    //   if (typeof eachGame.homegoal == 'string' && eachGame.homegoal.trim() == '' ){
-    //     eachGame.homegoal = 0;
-    //   }
-    //   if (typeof eachGame.visitorgoal == 'string' && eachGame.visitorgoal.trim() == '' ){
-    //     eachGame.visitorgoal = 0;
-    //   }
-    // })
 
     const body = {User: this.User};
 

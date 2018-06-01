@@ -35,10 +35,16 @@
     <ion-row>
       <ion-col>
         <ion-list>
-
+          {{Group.Name}}
           <ion-item *ngFor="let Group of User.Groups">
-            {{Group.Name}}
+
             <button (click) ="DeleteGroup(Group.Name);" ion-button clear item-end><ion-icon name='close'></ion-icon></button>
+
+            <ion-select [(ngModel)]="Group.BetType" (ionChange)="UpdateUser();">
+              <ion-option value="1">Sólo resultados</ion-option>
+              <ion-option value="2">Resultados y marcador</ion-option>
+            </ion-select>
+
           </ion-item>
 
         </ion-list>

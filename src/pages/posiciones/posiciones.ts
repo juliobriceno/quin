@@ -29,7 +29,8 @@ export class PosicionesPage {
   UsersGroups:any = [];
   UsersPlayers = [];
   CurrentUsersPlayers = [];
-  endedGames = [];
+  endedGames = [{homegoal: 0, visitorgoal: 0, game: ''}];
+  msgId = 1;
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
                     public loadingCtrl: LoadingController,
@@ -190,20 +191,22 @@ export class PosicionesPage {
               // Recorre cada juego simulado si lo consigue entre los juegos ya definidos los marca como están definidos
               // caso contrario los deja 0 a 0 sin finalizar
               this.User.DummyGames.forEach(function(eachUserGame){
-                var lendedGame = this.endedGames.filter(function(endedGame){
+                var lendedGame =   [{homegoal: 0, visitorgoal: 0, game: ''}];
+
+                var lendedGame = self.endedGames.filter(function(endedGame){
                   return endedGame.game == eachUserGame.game
                 })
                 // Si el juego no existe 0 a 0 sin terminar el juego para permitir editar
                 if (lendedGame.length == 0){
                   eachUserGame.isEnded = false;
-                  eachUserGame.homegoal = 0;
-                  eachUserGame.visitorgoal = 0;
+                  eachUserGame.homegoal = undefined;
+                  eachUserGame.visitorgoal = undefined;
                 }
                 // Caso contrario coloca el marcador dque viene y el juego lo coloca cerrado para que no pueda editar
                 else{
                   eachUserGame.isEnded = true;
-                  eachUserGame.homegoal = lendedGame.homegoal;
-                  eachUserGame.visitorgoal = lendedGame.length.visitorgoal;
+                  eachUserGame.homegoal = lendedGame[0].homegoal;
+                  eachUserGame.visitorgoal = lendedGame[0].visitorgoal;
                 }
               })
               this.ctrlSharedObjectsProvider.setUser(self.User);
@@ -285,7 +288,8 @@ export class PosicionesPage {
       this.UsersPlayers.forEach(function (userPlayer) {
         if (userPlayer.Email == self.User.Email && userPlayer.BetBy == self.User.Email){
           if(self.platform.is('cordova')){
-            lNotifications.push({ id: 1, text: 'Tu posición en el grupo: ' + userPlayer.GroupName + ' es: ' + userPlayer.Position });
+            lNotifications.push({ id: self.msgId, text: 'Estás en la posición: ' + userPlayer.Position, icon: "res://icon.png", smallIcon:"res://icon.png", title: 'Tú posición en grupo: ' + userPlayer.GroupName });
+            self.msgId ++;
           }
         }
       })
@@ -313,7 +317,8 @@ export class PosicionesPage {
               if (eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name){
                 eachUserPlayer.Level = 'oro';
                 if(self.platform.is('cordova')){
-                  lNotifications.push({ id: 2, text: UserInGroup.Alias + ' es el campeón!!!' });
+                  lNotifications.push({ id: self.msgId, text: UserInGroup.Alias + ' es campeón!!!', icon: "res://icon.png", smallIcon:"res://icon.png", title: "Campeón del grupo: " + eachUserPlayer.GroupName });
+                  self.msgId ++;
                 }
               }
             })
@@ -323,7 +328,8 @@ export class PosicionesPage {
               if (eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name){
                 eachUserPlayer.Level = 'plata';
                 if(self.platform.is('cordova')){
-                  lNotifications.push({ id: 3, text: UserInGroup.Alias + ' es el sub campeón!!!' });
+                  lNotifications.push({ id: self.msgId, text: UserInGroup.Alias + ' asegura medalla de plata!!!', icon: "res://icon.png", smallIcon:"res://icon.png", title: "Aseguró plata del grupo: " + eachUserPlayer.GroupName });
+                  self.msgId ++;
                 }
               }
             })
@@ -333,7 +339,8 @@ export class PosicionesPage {
               if (eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name){
                 eachUserPlayer.Level = 'bronce';
                 if(self.platform.is('cordova')){
-                  lNotifications.push({ id: 4, text: UserInGroup.Alias + ' aseguró el tercer lugar!!!' });
+                  lNotifications.push({ id: self.msgId, text: UserInGroup.Alias + ' asegura medalla de bronce!!!: ', icon: "res://icon.png", smallIcon:"res://icon.png", title: "Aseguró bronce del grupo: " + eachUserPlayer.GroupName });
+                  self.msgId ++;
                 }
               }
             })
@@ -345,9 +352,6 @@ export class PosicionesPage {
               }
             })
           }
-
-          console.log('Llegó aquí y mostrará múltiples mensajes');
-          console.log(lNotifications);
 
           self.localNotifications.schedule( lNotifications );
 

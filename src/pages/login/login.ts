@@ -20,9 +20,10 @@ export class LoginPage {
   validate:any={};
   registerForm: FormGroup;
   LoginForm: FormGroup;
-  User = { "Email": "", "Password": "", "ConfirmPassword": "" };
+  User = { "Email": "", "Password": "", "ConfirmPassword": "", "Groups": [], "DummyGames": [] };
   UserLogin = { "Email": "", "Password": "" };
   segments:string = '';
+  endedGames = [{homegoal: 0, visitorgoal: 0, game: ''}];
 
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
@@ -108,11 +109,42 @@ export class LoginPage {
 
     loading.present();
 
+    var self = this;
+
     this.http
       .post( mUrl, body ).subscribe(res => {
         loading.dismiss();
         if (res.json().result == 'ok' ){
-          this.ctrlSharedObjectsProvider.setUser(res.json().User);
+
+
+          this.User = res.json().User;
+          this.endedGames = res.json().endedGames;
+
+          // Ésta nueva rutina permite verificar si hay juegos bloqueados
+          // Si viene con juegos simulados pasa a sobre escribir todos los juegos siempre y cuando no venga de simulaciones propio
+          // Recorre cada juego simulado si lo consigue entre los juegos ya definidos los marca como están definidos
+          // caso contrario los deja 0 a 0 sin finalizar
+          this.User.DummyGames.forEach(function(eachUserGame){
+            var lendedGame =   [{homegoal: 0, visitorgoal: 0, game: ''}];
+
+            var lendedGame = self.endedGames.filter(function(endedGame){
+              return endedGame.game == eachUserGame.game
+            })
+            // Si el juego no existe 0 a 0 sin terminar el juego para permitir editar
+            if (lendedGame.length == 0){
+              eachUserGame.isEnded = false;
+              eachUserGame.homegoal = undefined;
+              eachUserGame.visitorgoal = undefined;
+            }
+            // Caso contrario coloca el marcador dque viene y el juego lo coloca cerrado para que no pueda editar
+            else{
+              eachUserGame.isEnded = true;
+              eachUserGame.homegoal = lendedGame[0].homegoal;
+              eachUserGame.visitorgoal = lendedGame[0].visitorgoal;
+            }
+          })
+
+          this.ctrlSharedObjectsProvider.setUser(this.User);
           this.navCtrl.push( TabsPage )
         }
         else{
