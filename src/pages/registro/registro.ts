@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Http } from '@angular/http';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { HomePage, MenuopcionesPage } from "../index.paginas";
+import { HomePage, MenuopcionesPage, LoginPage } from "../index.paginas";
 import { AlertController, LoadingController } from 'ionic-angular';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -51,7 +51,7 @@ export class RegistroPage {
         alert.present();
         return 0;
       }
-      let newGroup = { Name:this.newGroupName }
+      let newGroup = { Name:this.newGroupName, BetType: 1 }
       this.User.Groups.push(newGroup);
       this.newGroupName = '';
       this.deleteGroup = false;
@@ -65,7 +65,7 @@ export class RegistroPage {
       const body = {User: this.User};
 
       let loading = this.loadingCtrl.create({
-        content: 'Working...',
+        content: 'Actualizando datos.',
         spinner: 'ios'
       });
 
@@ -78,7 +78,7 @@ export class RegistroPage {
             this.ctrlSharedObjectsProvider.setUser(res.json().User);
             if (this.fromGroup == false){
               let alert = this.alertCtrl.create({
-                title: 'Ready!',
+                title: 'Listo!',
                 subTitle: 'Cambiaste el tipo de juego del grupo.',
                 buttons: ['Ok']
               });
@@ -87,8 +87,8 @@ export class RegistroPage {
             else{
               if (this.deleteGroup == true){
                 let alert = this.alertCtrl.create({
-                  title: 'Ready!',
-                  subTitle: 'El grupo fue eliminado...',
+                  title: 'Listo!',
+                  subTitle: 'Eliminaste el grupo.',
                   buttons: ['Ok']
                 });
                 alert.present();
@@ -96,31 +96,29 @@ export class RegistroPage {
               else{
                 if (res.json().newGroup == true ){
                   let alert = this.alertCtrl.create({
-                    title: 'Ready!',
-                    subTitle: 'Has creador un nuevo grupo...',
+                    title: 'Listo!',
+                    subTitle: 'Felicitaciones! Has creado un nuevo grupo.',
                     buttons: ['Ok']
                   });
                   alert.present();
                 }
                 else{
                   let alert = this.alertCtrl.create({
-                    title: 'Ready!',
-                    subTitle: 'Te uniste al grupo...',
+                    title: 'Listo!',
+                    subTitle: 'Te has unido a un grupo.',
                     buttons: ['Ok']
                   });
                   alert.present();
                 }
               }
             }
+            // Para que refresque las posiciones cuando vaya
+            this.ctrlSharedObjectsProvider.setRefreshPosition(true);
           }
           else
           {
-            let alert = this.alertCtrl.create({
-              title: 'Oops!',
-              subTitle: 'El usuario no existe. Ya te registraste?',
-              buttons: ['Ok']
-            });
-            alert.present();
+            // Caso distinto a OK vuelve a login page
+            this.navCtrl.setRoot(LoginPage);
           }
           this.fromGroup = false;
         }

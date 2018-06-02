@@ -8,3 +8,4 @@ export {ContrasenaPage} from "./contrasena/contrasena";
 export {QuinielagrupoPage} from "./quinielagrupo/quinielagrupo";
 export {RecuperarcontrasenaPage} from "./recuperarcontrasena/recuperarcontrasena";
 export {SimuladorPage} from "./simulador/simulador";
+export {LoginPage} from "./login/login";

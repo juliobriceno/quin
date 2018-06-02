@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Http } from '@angular/http';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { HomePage, MenuopcionesPage } from "../index.paginas";
+import { HomePage, MenuopcionesPage, LoginPage } from "../index.paginas";
 import { AlertController, LoadingController } from 'ionic-angular';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -19,6 +19,7 @@ import * as _ from 'lodash';
 export class SimuladorPage {
   MenuOpciones:any = MenuopcionesPage;
   User = { DummyGames: [] };
+  Save = false;
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
                     public loadingCtrl: LoadingController,
@@ -30,8 +31,14 @@ export class SimuladorPage {
     this.User.DummyGames = _.orderBy(this.User.DummyGames, ['gamedateid'],['asc']);
   }
 
+  onSearchChange(searchValue : string ) {
+    this.Save = true;
+  }
+
   keyPress(event: any) {
     const pattern = /[0-9]/;
+
+    this.Save = true;
 
     let inputChar = String.fromCharCode(event.charCode);
     if (event.keyCode != 8 && !pattern.test(inputChar)) {
@@ -56,7 +63,7 @@ export class SimuladorPage {
     const body = {User: this.User};
 
     let loading = this.loadingCtrl.create({
-      content: 'Working...',
+      content: 'Actualizando resultados.',
       spinner: 'ios'
     });
 
@@ -66,6 +73,8 @@ export class SimuladorPage {
       .post( mUrl, body ).subscribe(res => {
         loading.dismiss();
 
+        this.Save = false;
+
         // Para que refresque las posiciones cuando vaya
         this.ctrlSharedObjectsProvider.setRefreshPosition(true);
         this.ctrlSharedObjectsProvider.setOwnCalc(true);
@@ -74,8 +83,8 @@ export class SimuladorPage {
           this.ctrlSharedObjectsProvider.setUser(res.json().User);
 
           let alert = this.alertCtrl.create({
-            title: 'Ready!',
-            subTitle: 'Los datos fueron actualizados...',
+            title: 'Listo!',
+            subTitle: 'Los datos fueron actualizados.',
             buttons: ['Ok']
           });
           alert.present();
@@ -83,12 +92,8 @@ export class SimuladorPage {
         }
         else
         {
-          let alert = this.alertCtrl.create({
-            title: 'Oops!',
-            subTitle: 'El usuario no existe. Ya te registraste?',
-            buttons: ['Ok']
-          });
-          alert.present();
+          // Caso distinto a OK vuelve a login page
+          this.navCtrl.setRoot(LoginPage);
         }
       }
     )

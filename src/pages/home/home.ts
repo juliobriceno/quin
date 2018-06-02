@@ -5,7 +5,7 @@ import { MenuopcionesPage } from "../index.paginas";
 import { AlertController, LoadingController } from 'ionic-angular';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
-import { PosicionesPage, TabsPage } from "../index.paginas";
+import { PosicionesPage, TabsPage, LoginPage } from "../index.paginas";
 
 import { url } from "../../config/url.config"
 
@@ -27,6 +27,8 @@ import { App } from 'ionic-angular';
 export class HomePage {
   MenuOpciones:any = MenuopcionesPage;
   User = { Email: '' };
+  Save = false;
+  noBet = false;
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
                     public loadingCtrl: LoadingController,
@@ -40,6 +42,16 @@ export class HomePage {
 
                        this.backgroundMode.on('activate').subscribe(() => {
                         console.log('Se activó tremendo backgroud');
+                       });
+
+                       this.backgroundMode.setDefaults({
+                           title: 'Acerté',
+                           text: 'Esperando los resultados oficiales...',
+                           icon: "res://icon.png"
+                       })
+
+                       this.platform.registerBackButtonAction(() => {
+                         this.backgroundMode.moveToBackground();
                        });
 
                        this.backgroundMode.enable();
@@ -74,9 +86,16 @@ export class HomePage {
 
   ionViewWillEnter(){
     this.User = this.ctrlSharedObjectsProvider.getUser();
+    this.noBet = this.ctrlSharedObjectsProvider.getnoBet();
+  }
+
+  onSearchChange(searchValue : string ) {
+    this.Save = true;
   }
 
   keyPress(event: any) {
+
+    this.Save = true;
 
     const pattern = /[0-9]/;
 
@@ -93,7 +112,7 @@ export class HomePage {
     const body = {User: this.User};
 
     let loading = this.loadingCtrl.create({
-      content: 'Working...',
+      content: 'Guardando...',
       spinner: 'ios'
     });
 
@@ -103,26 +122,24 @@ export class HomePage {
       .post( mUrl, body ).subscribe(res => {
         loading.dismiss();
 
+        this.Save = false;
+
         // Para que refresque las posiciones cuando vaya
         this.ctrlSharedObjectsProvider.setRefreshPosition(true);
 
         if (res.json().result == 'ok' ){
           this.ctrlSharedObjectsProvider.setUser(res.json().User);
           let alert = this.alertCtrl.create({
-            title: 'Ready!',
-            subTitle: 'Los datos fueron actualizados...',
+            title: 'Listo!',
+            subTitle: 'Tu quiniela fue actualizada.',
             buttons: ['Ok']
           });
           alert.present();
         }
         else
         {
-          let alert = this.alertCtrl.create({
-            title: 'Oops!',
-            subTitle: 'El usuario no existe. Ya te registraste?',
-            buttons: ['Ok']
-          });
-          alert.present();
+          // Caso distinto a OK vuelve a login page
+          this.navCtrl.setRoot(LoginPage);
         }
       }
     )

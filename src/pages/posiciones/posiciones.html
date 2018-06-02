@@ -22,7 +22,7 @@
 <ion-content padding  class="background">
   <ion-list >
     <ion-item>
-     <ion-label color="blanco">Grupos vinculados</ion-label>
+     <ion-label color="blanco">Escoge el grupo -->> </ion-label>
 
      <ion-select [(ngModel)]="selectedGroup" (ionChange)="groupChange($event)">
        <ion-option *ngFor="let Group of User.Groups">

@@ -20,6 +20,9 @@ import { Platform } from 'ionic-angular';
 })
 export class MenuopcionesPage {
 
+  mPerfilPage:any = PerfilPage;
+  mContrasenaPage:any = ContrasenaPage;
+
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
                     public loadingCtrl: LoadingController,
@@ -33,7 +36,7 @@ export class MenuopcionesPage {
     const body = {};
 
     let loading = this.loadingCtrl.create({
-      content: 'Working...',
+      content: 'Cerrando sesión.',
       spinner: 'ios'
     });
 

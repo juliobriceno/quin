@@ -33,7 +33,7 @@ export class ContrasenaPage {
     if (typeof this.User.Password == 'undefined' || typeof this.User.ConfirmPassword == 'undefined' || this.User.Password.trim() == ''){
       let alert = this.alertCtrl.create({
         title: 'Oops!',
-        subTitle: 'Debe colocar el nuevo password',
+        subTitle: 'Debes colocar el nuevo password',
         buttons: ['Ok']
       });
       alert.present();
@@ -43,7 +43,7 @@ export class ContrasenaPage {
     if (this.User.Password.trim() != this.User.ConfirmPassword.trim()){
       let alert = this.alertCtrl.create({
         title: 'Oops!',
-        subTitle: 'Los Password deben coincidir',
+        subTitle: 'Los Password deben ser iguales',
         buttons: ['Ok']
       });
       alert.present();
@@ -55,7 +55,7 @@ export class ContrasenaPage {
     const body = {User: this.User};
 
     let loading = this.loadingCtrl.create({
-      content: 'Working...',
+      content: 'Actualizando.',
       spinner: 'ios'
     });
 
@@ -67,8 +67,8 @@ export class ContrasenaPage {
         if (res.json().result == 'ok' ){
           this.ctrlSharedObjectsProvider.setUser(res.json().User);
           let alert = this.alertCtrl.create({
-            title: 'Ready!',
-            subTitle: 'Los datos fueron actualizados...',
+            title: 'Listo!',
+            subTitle: 'La contraseña fue actualizada.',
             buttons: ['Ok']
           });
           alert.present();

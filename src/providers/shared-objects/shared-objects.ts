@@ -8,6 +8,7 @@ export class SharedObjectsProvider {
   RefreshPostions: boolean = true;
   ActualGroup = '';
   OwnCalc = true;
+  noBet = false;
 
   setUser(value) {
     this.User = value;
@@ -55,6 +56,14 @@ export class SharedObjectsProvider {
 
   getOwnCalc() {
     return this.OwnCalc;
+  }
+
+  setnoBet(value) {
+    this.noBet = value;
+  }
+
+  getnoBet() {
+    return this.noBet;
   }
 
 }

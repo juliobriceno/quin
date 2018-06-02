@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Http } from '@angular/http';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { HomePage, MenuopcionesPage, QuinielagrupoPage } from "../index.paginas";
+import { HomePage, MenuopcionesPage, QuinielagrupoPage, LoginPage } from "../index.paginas";
 import { AlertController, LoadingController } from 'ionic-angular';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -170,7 +170,7 @@ export class PosicionesPage {
       const body = {User: this.User};
 
       let loading = this.loadingCtrl.create({
-        content: 'Working...',
+        content: 'Buscando información.',
         spinner: 'ios'
       });
 
@@ -231,12 +231,9 @@ export class PosicionesPage {
 
           }
           else{
-            let alert = this.alertCtrl.create({
-              title: 'Oops!',
-              subTitle: 'El usuario no existe. Ya te registraste?',
-              buttons: ['Ok']
-            });
-            alert.present();        }
+            // Caso distinto a OK vuelve a login page
+            this.navCtrl.setRoot(LoginPage);
+          }
         }
       )
 

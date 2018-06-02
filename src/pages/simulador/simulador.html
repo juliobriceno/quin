@@ -9,10 +9,10 @@
   <ion-navbar  color="rojo">
     <ion-title>Simulador</ion-title>
     <ion-buttons end>
-        <button (click) ="UpdateUser();" ion-button icon-only
+        <button [hidden]="!Save" (click) ="UpdateUser();" ion-button icon-only
                 [navPush]="tab10">
           <ion-icon name="checkmark"></ion-icon>
-          Listo
+          Guardar
         </button>
         <button ion-button icon-only
                   [navPush]="MenuOpciones">
@@ -37,7 +37,7 @@
                 <img src="{{Game.homeflag}}">
               </ion-avatar>
                <ion-label floating>{{Game.homename}}</ion-label>
-              <ion-input [disabled]="Game.isEnded" [(ngModel)]="Game.homegoal" type="number" (keypress)="keyPress($event);" ></ion-input>
+              <ion-input [disabled]="Game.isEnded" [(ngModel)]="Game.homegoal" type="number" (keypress)="keyPress($event);" (input)="onSearchChange($event.target.value)" ></ion-input>
             </ion-item>
           </ion-col>
           <ion-col col>
@@ -46,7 +46,7 @@
                 <img src="{{Game.visitorflag}}">
               </ion-avatar>
                <ion-label floating>{{Game.visitorname}}</ion-label>
-              <ion-input [disabled]="Game.isEnded" [(ngModel)]="Game.visitorgoal" type="number" (keypress)="keyPress($event);" ></ion-input>
+              <ion-input [disabled]="Game.isEnded" [(ngModel)]="Game.visitorgoal" type="number" (keypress)="keyPress($event);" (input)="onSearchChange($event.target.value)"></ion-input>
             </ion-item>
           </ion-col>
         </ion-row>

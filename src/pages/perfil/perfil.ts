@@ -57,7 +57,7 @@ export class PerfilPage {
         if (res.json().result == 'ok' ){
           this.ctrlSharedObjectsProvider.setUser(res.json().User);
           let alert = this.alertCtrl.create({
-            title: 'Ready!',
+            title: 'Listo!',
             subTitle: 'Los datos fueron actualizados...',
             buttons: ['Ok']
           });

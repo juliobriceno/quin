@@ -6,11 +6,10 @@
 -->
 <ion-header>
   <ion-navbar color="rojo">
-    <ion-title>Grupos vinculados</ion-title>
+    <ion-title>Mis Grupos</ion-title>
     <ion-buttons end>
       <button ion-button icon-only
       [navPush]="tab10">
-      <ion-icon name="checkmark"></ion-icon>
     </button>
     <button ion-button icon-only
                 [navPush]="MenuOpciones">
@@ -35,8 +34,11 @@
     <ion-row>
       <ion-col>
         <ion-list>
-          {{Group.Name}}
+
+
           <ion-item *ngFor="let Group of User.Groups">
+
+            <ion-label>{{Group.Name}}</ion-label>
 
             <button (click) ="DeleteGroup(Group.Name);" ion-button clear item-end><ion-icon name='close'></ion-icon></button>
 

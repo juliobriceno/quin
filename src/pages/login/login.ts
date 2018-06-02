@@ -24,6 +24,7 @@ export class LoginPage {
   UserLogin = { "Email": "", "Password": "" };
   segments:string = '';
   endedGames = [{homegoal: 0, visitorgoal: 0, game: ''}];
+  noBet = false;
 
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
@@ -91,7 +92,7 @@ export class LoginPage {
     if (!this.LoginForm.valid) {
       let alert = this.alertCtrl.create({
         title: 'Oops!',
-        subTitle: 'Por favor revisa los campos con error.',
+        subTitle: 'Hay campos con errores. Por favor revisa',
         buttons: ['Ok']
       });
       alert.present();
@@ -103,7 +104,7 @@ export class LoginPage {
     const body = {User: this.UserLogin};
 
     let loading = this.loadingCtrl.create({
-      content: 'Working...',
+      content: 'Comprobando...',
       spinner: 'ios'
     });
 
@@ -119,6 +120,10 @@ export class LoginPage {
 
           this.User = res.json().User;
           this.endedGames = res.json().endedGames;
+
+          // noBet determina si aún se permiten o no quiniela
+          this.noBet = res.json().noBet;
+          this.ctrlSharedObjectsProvider.setnoBet(this.noBet);
 
           // Ésta nueva rutina permite verificar si hay juegos bloqueados
           // Si viene con juegos simulados pasa a sobre escribir todos los juegos siempre y cuando no venga de simulaciones propio
@@ -145,12 +150,12 @@ export class LoginPage {
           })
 
           this.ctrlSharedObjectsProvider.setUser(this.User);
-          this.navCtrl.push( TabsPage )
+          this.navCtrl.setRoot(TabsPage)
         }
         else{
           let alert = this.alertCtrl.create({
             title: 'Oops!',
-            subTitle: 'El usuario no existe. Ya te registraste?',
+            subTitle: 'El usuario no existe! Ya te registraste?',
             buttons: ['Ok']
           });
           alert.present();        }
@@ -164,7 +169,7 @@ export class LoginPage {
     if (!this.registerForm.valid) {
       let alert = this.alertCtrl.create({
         title: 'Oops!',
-        subTitle: 'Por favor revisa los campos con error.',
+        subTitle: 'Hay campos con error. Por favor revisa.',
         buttons: ['Ok']
       });
       alert.present();
@@ -176,7 +181,7 @@ export class LoginPage {
     const body = {User: this.User};
 
     let loading = this.loadingCtrl.create({
-      content: 'Working...',
+      content: 'Creando usuario.',
       spinner: 'ios'
     });
 
@@ -187,7 +192,7 @@ export class LoginPage {
         loading.dismiss();
         if (res.json().result == 'ok' ){
           this.ctrlSharedObjectsProvider.setUser(res.json().User);
-          this.navCtrl.push( TabsPage )
+          this.navCtrl.setRoot(TabsPage)
         }
         else if (res.json().result == 'userExist' ){
           let alert = this.alertCtrl.create({

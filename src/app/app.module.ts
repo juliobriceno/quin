@@ -14,7 +14,7 @@ import { BackgroundMode } from '@ionic-native/background-mode';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 
 import { SocketIoModule, SocketIoConfig } from 'ng-socket-io';
-const config: SocketIoConfig = { url: 'http://192.168.1.129:3000', options: {} };
+const config: SocketIoConfig = { url: 'https://jokaquiniela.herokuapp.com', options: {} };
 
 @NgModule({
   declarations: [
