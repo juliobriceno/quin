@@ -62,7 +62,7 @@ export class PosicionesPage {
     })
 
     // El grupo resultante lo ordena por posición
-    this.CurrentUsersPlayers = _.orderBy(this.CurrentUsersPlayers, ['Position'], ['desc']);
+    this.CurrentUsersPlayers = _.orderBy(this.CurrentUsersPlayers, ['Position'], ['asc']);
 
   }
 
