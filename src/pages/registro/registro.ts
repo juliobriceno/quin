@@ -55,6 +55,7 @@ export class RegistroPage {
       this.User.Groups.push(newGroup);
       this.newGroupName = '';
       this.deleteGroup = false;
+      this.fromGroup = true;
       this.UpdateUser();
     }
 

@@ -92,55 +92,63 @@ export class PosicionesPage {
       })[0];
 
       Data.Users.forEach(function(User){
-        var UserPlayer = { Alias: '', Email: '', Score: 0, GroupName: [], BetBy: '' };
-        UserPlayer.Alias = User.Alias;
-        UserPlayer.Email = User.Email;
-        UserPlayer.Score = 0;
-        UserPlayer.GroupName = eachGroup.Name;
-        UserPlayer.BetBy = userEmail;
 
-        // Recorre todos los pronósticos
-        User.Games.forEach(function(UserGame){
-          // Por cada pronóstico busca cada resultado si lo acertó y el BetType == 1 (1 punto) si además el BetType == 2 y acertó el resultado 1 punto más. Sólo
-          // los juegos que se hayan considerado terminado. Los pronóstico son del usuario que se le pase a ésta función
 
-          var myUserDummyGame = userDummyGame.DummyGames.filter(function(UserDummyGame){
-            return UserDummyGame.game == UserGame.game &&
-            ((typeof UserDummyGame.homegoal == 'string' && UserDummyGame.homegoal.trim() != '') || (typeof UserDummyGame.homegoal == 'number')) &&
-            ((typeof UserDummyGame.visitorgoal == 'string' && UserDummyGame.visitorgoal.trim() != '') || (typeof UserDummyGame.visitorgoal == 'number')) &&
-            ((typeof UserGame.homegoal == 'string' && UserGame.homegoal.trim() != '') || (typeof UserGame.homegoal == 'number')) &&
-            ((typeof UserGame.visitorgoal == 'string' && UserGame.visitorgoal.trim() != '')  || (typeof UserGame.visitorgoal == 'number'))
-          })[0];
+        // Sólo trabajará con todos los datos que vienen, pero sólo del grupo que se está recorriendo
+        if (User.GroupName == eachGroup.Name){
 
-          // Si no devolvió nada es que el juego no está finalizado y no aumenta el Score a nadie
-          if (typeof myUserDummyGame != 'undefined')
-          {
-            if
-            (
-              // Si fue empate el resultado y se predijo empate
-              (myUserDummyGame.homegoal == myUserDummyGame.visitorgoal && UserGame.homegoal == UserGame.visitorgoal ) ||
-              // Or fue vistoria del local y se predijo victoria del local
-              (myUserDummyGame.homegoal > myUserDummyGame.visitorgoal && UserGame.homegoal > UserGame.visitorgoal ) ||
-              // Or fue victoria del visitante y se predijo victoria del visitante
-              (myUserDummyGame.homegoal < myUserDummyGame.visitorgoal && UserGame.homegoal < UserGame.visitorgoal )
-            )
+          var UserPlayer = { Alias: '', Email: '', Score: 0, GroupName: [], BetBy: '' };
+          UserPlayer.Alias = User.Alias;
+          UserPlayer.Email = User.Email;
+          UserPlayer.Score = 0;
+          UserPlayer.GroupName = eachGroup.Name;
+          UserPlayer.BetBy = userEmail;
+
+          // Recorre todos los pronósticos
+          User.Games.forEach(function(UserGame){
+            // Por cada pronóstico busca cada resultado si lo acertó y el BetType == 1 (1 punto) si además el BetType == 2 y acertó el resultado 1 punto más. Sólo
+            // los juegos que se hayan considerado terminado. Los pronóstico son del usuario que se le pase a ésta función
+
+            var myUserDummyGame = userDummyGame.DummyGames.filter(function(UserDummyGame){
+              return UserDummyGame.game == UserGame.game &&
+              ((typeof UserDummyGame.homegoal == 'string' && UserDummyGame.homegoal.trim() != '') || (typeof UserDummyGame.homegoal == 'number')) &&
+              ((typeof UserDummyGame.visitorgoal == 'string' && UserDummyGame.visitorgoal.trim() != '') || (typeof UserDummyGame.visitorgoal == 'number')) &&
+              ((typeof UserGame.homegoal == 'string' && UserGame.homegoal.trim() != '') || (typeof UserGame.homegoal == 'number')) &&
+              ((typeof UserGame.visitorgoal == 'string' && UserGame.visitorgoal.trim() != '')  || (typeof UserGame.visitorgoal == 'number'))
+            })[0];
+
+            // Si no devolvió nada es que el juego no está finalizado y no aumenta el Score a nadie
+            if (typeof myUserDummyGame != 'undefined')
             {
-              UserPlayer.Score += 1;
-            }
-            // Además si acertó el resultado exacto 1 punto adicional
-            if (myBetType == 2){
               if
               (
-                // Si el resultado pronosticado fue excato al que se dió
-                myUserDummyGame.homegoal == UserGame.homegoal && myUserDummyGame.visitorgoal == UserGame.visitorgoal
+                // Si fue empate el resultado y se predijo empate
+                (myUserDummyGame.homegoal == myUserDummyGame.visitorgoal && UserGame.homegoal == UserGame.visitorgoal ) ||
+                // Or fue vistoria del local y se predijo victoria del local
+                (myUserDummyGame.homegoal > myUserDummyGame.visitorgoal && UserGame.homegoal > UserGame.visitorgoal ) ||
+                // Or fue victoria del visitante y se predijo victoria del visitante
+                (myUserDummyGame.homegoal < myUserDummyGame.visitorgoal && UserGame.homegoal < UserGame.visitorgoal )
               )
               {
                 UserPlayer.Score += 1;
               }
+              // Además si acertó el resultado exacto 1 punto adicional
+              if (myBetType == 2){
+                if
+                (
+                  // Si el resultado pronosticado fue excato al que se dió
+                  myUserDummyGame.homegoal == UserGame.homegoal && myUserDummyGame.visitorgoal == UserGame.visitorgoal
+                )
+                {
+                  UserPlayer.Score += 1;
+                }
+              }
             }
-          }
-        })
-        self.UsersPlayers.push(UserPlayer);
+          })
+          self.UsersPlayers.push(UserPlayer);
+
+        }
+
       })
 
     })
@@ -216,7 +224,12 @@ export class PosicionesPage {
             // El primer procesamiento es con la data actual del user actual
             this.UsersPlayers = [];
             // Por cada usuario calcula los resultados basados en todos los resultados faltantes perfectos según su quiniela
-            this.UsersGroups.forEach(function(User){
+
+            // Extrae diferentes usuarios para enviar a procesar. Internamente procesará con todos en la función
+            var distinctUsersGroups = _.uniqBy(this.UsersGroups, 'Email');
+
+
+            distinctUsersGroups.forEach(function(User){
               // Cada juego no terminado lo termina con el resultado igual al pronosticado
               User.DummyGames.forEach(function(usrDummyGame){
                 if (typeof User.Games[usrDummyGame.game] != 'undefined'){
@@ -281,18 +294,20 @@ export class PosicionesPage {
 
       })
 
-      // Mensaje con la posición del usuario actual en cada uno de los grupos
-      this.UsersPlayers.forEach(function (userPlayer) {
-        if (userPlayer.Email == self.User.Email && userPlayer.BetBy == self.User.Email){
-          if(self.platform.is('cordova')){
-            lNotifications.push({ id: self.msgId, text: 'Estás en la posición: ' + userPlayer.Position, icon: "res://icon.png", smallIcon:"res://icon.png", title: 'Tú posición en grupo: ' + userPlayer.GroupName });
-            self.msgId ++;
-          }
-        }
-      })
 
       // Recorre cada grupo del usuario actual
       this.User.Groups.forEach(function(eachUserGroup){
+
+        // Mensaje con la posición del usuario actual en cada uno de los grupos
+        self.UsersPlayers.forEach(function (userPlayer) {
+          if ( userPlayer.Email == self.User.Email && userPlayer.BetBy == self.User.Email && userPlayer.GroupName == eachUserGroup.Name ){
+            if(self.platform.is('cordova')){
+              lNotifications.push({ id: self.msgId, text: 'Estás en la posición: ' + userPlayer.Position, icon: "res://icon.png", smallIcon:"res://icon.png", title: 'Tú posición en grupo: ' + userPlayer.GroupName });
+              self.msgId ++;
+            }
+          }
+        })
+
         // Por cada grupo del usuario actual analiza cada jugador basado en la jugada del jugador actual
         var allUserPlayerByGroupByBet = self.UsersPlayers.filter(function(eachUserGroupResultByBet){
           return eachUserGroupResultByBet.GroupName == eachUserGroup.Name;
@@ -303,6 +318,7 @@ export class PosicionesPage {
 
         // Por cada jugador ve su peor posición posible em el grupo actual
         allDistintUserPlayerByGroupByBet.forEach(function(UserInGroup){
+
           var UserInAllSameGroup = allUserPlayerByGroupByBet.filter(function(eachUserInGroup){
             return eachUserInGroup.Email ==  UserInGroup.Email;
           })
@@ -311,7 +327,7 @@ export class PosicionesPage {
 
           if (UserInAllSameGroup[0].Position == 1){
             self.UsersPlayers.forEach(function(eachUserPlayer){
-              if (eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name){
+              if ( eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name && eachUserPlayer.BetBy == UserInGroup.BetBy ){
                 eachUserPlayer.Level = 'oro';
                 if(self.platform.is('cordova')){
                   lNotifications.push({ id: self.msgId, text: UserInGroup.Alias + ' es campeón!!!', icon: "res://icon.png", smallIcon:"res://icon.png", title: "Campeón del grupo: " + eachUserPlayer.GroupName });
@@ -322,7 +338,7 @@ export class PosicionesPage {
           }
           else if (UserInAllSameGroup[0].Position == 2){
             self.UsersPlayers.forEach(function(eachUserPlayer){
-              if (eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name){
+              if ( eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name && eachUserPlayer.BetBy == UserInGroup.BetBy ){
                 eachUserPlayer.Level = 'plata';
                 if(self.platform.is('cordova')){
                   lNotifications.push({ id: self.msgId, text: UserInGroup.Alias + ' asegura medalla de plata!!!', icon: "res://icon.png", smallIcon:"res://icon.png", title: "Aseguró plata del grupo: " + eachUserPlayer.GroupName });
@@ -333,7 +349,7 @@ export class PosicionesPage {
           }
           else if (UserInAllSameGroup[0].Position == 3){
             self.UsersPlayers.forEach(function(eachUserPlayer){
-              if (eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name){
+              if ( eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name && eachUserPlayer.BetBy == UserInGroup.BetBy ){
                 eachUserPlayer.Level = 'bronce';
                 if(self.platform.is('cordova')){
                   lNotifications.push({ id: self.msgId, text: UserInGroup.Alias + ' asegura medalla de bronce!!!: ', icon: "res://icon.png", smallIcon:"res://icon.png", title: "Aseguró bronce del grupo: " + eachUserPlayer.GroupName });
@@ -350,14 +366,13 @@ export class PosicionesPage {
             })
           }
 
+
           self.localNotifications.schedule( lNotifications );
 
         })
 
 
       })
-
-      console.log(self.UsersPlayers);
 
     }
 
