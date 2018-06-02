@@ -60,6 +60,10 @@ export class PosicionesPage {
     this.CurrentUsersPlayers = this.UsersPlayers.filter(function(UserPlayer){
       return UserPlayer.GroupName == selectedValue.trim() && UserPlayer.BetBy == self.User.Email;
     })
+
+    // El grupo resultante lo ordena por posición
+    this.CurrentUsersPlayers = _.orderBy(this.CurrentUsersPlayers, ['Position'], ['desc']);
+
   }
 
   processResults(pUsers, userEmail, isSimulated){
