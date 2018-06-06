@@ -8,7 +8,6 @@ import { HomePage,PosicionesPage,RegistroPage,SimuladorPage } from "../index.pag
  * Ionic pages and navigation.
  */
 
-@IonicPage()
 @Component({
   selector: 'page-tabs',
   templateUrl: 'tabs.html',

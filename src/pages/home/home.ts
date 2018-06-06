@@ -10,7 +10,6 @@ import { PosicionesPage, TabsPage, LoginPage } from "../index.paginas";
 import { url } from "../../config/url.config"
 
 import { SharedObjectsProvider } from '../../providers/shared-objects/shared-objects';
-import { GropByPipe } from '../../pipes/grop-by/grop-by';
 
 import { Platform } from 'ionic-angular';
 import { BackgroundMode } from '@ionic-native/background-mode';

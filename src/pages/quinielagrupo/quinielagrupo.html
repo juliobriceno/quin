@@ -17,7 +17,7 @@
   <ion-grid>
     <ion-list inset>
 
-      <ion-item-group *ngFor="let GameGroup of User.DummyGames | gropBy:'gamedate'" >
+      <ion-item-group *ngFor="let GameGroup of User.DummyGames | separator:'gamedate'" >
         <ion-item-divider> <h2>{{GameGroup.key}}</h2></ion-item-divider>
         <ion-row *ngFor="let Game of GameGroup.value; let in = index" >
           <ion-col col>

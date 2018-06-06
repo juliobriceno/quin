@@ -5,10 +5,12 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { MyApp } from './app.component';
-import {HomePage,PosicionesPage,TabsPage,RegistroPage,MenuopcionesPage,PerfilPage,ContrasenaPage,QuinielagrupoPage,RecuperarcontrasenaPage,SimuladorPage} from '../pages/index.paginas';
+// import {HomePage,PosicionesPage,TabsPage,RegistroPage,MenuopcionesPage,PerfilPage,ContrasenaPage,QuinielagrupoPage,RecuperarcontrasenaPage,SimuladorPage} from '../pages/index.paginas';
+import {HomePage, SimuladorPage, QuinielagrupoPage, PosicionesPage, RegistroPage, TabsPage, MenuopcionesPage, PerfilPage, ContrasenaPage, RecuperarcontrasenaPage, LoginPage} from '../pages/index.paginas';
 import { SharedObjectsProvider } from '../providers/shared-objects/shared-objects';
 
-import { GropByPipe } from '../pipes/grop-by/grop-by';
+// import { GropByPipe } from '../pipes/grop-by/grop-by';
+import { SeparatorPipe } from '../pipes/separator/separator';
 
 import { BackgroundMode } from '@ionic-native/background-mode';
 import { LocalNotifications } from '@ionic-native/local-notifications';
@@ -20,16 +22,18 @@ const config: SocketIoConfig = { url: 'https://jokaquiniela.herokuapp.com', opti
   declarations: [
     MyApp,
     HomePage,
+    SeparatorPipe,
+    SimuladorPage,
+    QuinielagrupoPage,
     PosicionesPage,
     RegistroPage,
     TabsPage,
     MenuopcionesPage,
     PerfilPage,
     ContrasenaPage,
-    QuinielagrupoPage,
     RecuperarcontrasenaPage,
-    SimuladorPage,
-    GropByPipe
+    LoginPage
+    // GroupByPipe
   ],
   imports: [
     BrowserModule,
@@ -49,7 +53,8 @@ const config: SocketIoConfig = { url: 'https://jokaquiniela.herokuapp.com', opti
     QuinielagrupoPage,
     MenuopcionesPage,
     SimuladorPage,
-    RecuperarcontrasenaPage
+    RecuperarcontrasenaPage,
+    LoginPage
   ],
   providers: [
     StatusBar,

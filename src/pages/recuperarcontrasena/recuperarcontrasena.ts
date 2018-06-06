@@ -9,7 +9,6 @@ import { url } from "../../config/url.config"
 
 import { SharedObjectsProvider } from '../../providers/shared-objects/shared-objects';
 
-@IonicPage()
 @Component({
   selector: 'page-recuperarcontrasena',
   templateUrl: 'recuperarcontrasena.html',

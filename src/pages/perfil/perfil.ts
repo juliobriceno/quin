@@ -8,9 +8,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { url } from "../../config/url.config"
 
 import { SharedObjectsProvider } from '../../providers/shared-objects/shared-objects';
-import { GropByPipe } from '../../pipes/grop-by/grop-by';
 
-@IonicPage()
 @Component({
   selector: 'page-perfil',
   templateUrl: 'perfil.html',

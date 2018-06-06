@@ -8,14 +8,13 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { url } from "../../config/url.config"
 
 import { SharedObjectsProvider } from '../../providers/shared-objects/shared-objects';
-import { GropByPipe } from '../../pipes/grop-by/grop-by';
 import * as _ from 'lodash';
 
+import { NgModule } from '@angular/core';
 
-@IonicPage()
 @Component({
   selector: 'page-quinielagrupo',
-  templateUrl: 'quinielagrupo.html',
+  templateUrl: 'quinielagrupo.html'
 })
 export class QuinielagrupoPage {
   User = { };

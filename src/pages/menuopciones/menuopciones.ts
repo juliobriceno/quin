@@ -8,12 +8,10 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { url } from "../../config/url.config"
 
 import { SharedObjectsProvider } from '../../providers/shared-objects/shared-objects';
-import { GropByPipe } from '../../pipes/grop-by/grop-by';
 
 import { Platform } from 'ionic-angular';
 
 
-@IonicPage()
 @Component({
   selector: 'page-menuopciones',
   templateUrl: 'menuopciones.html',

@@ -8,7 +8,6 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { url } from "../../config/url.config"
 
 import { SharedObjectsProvider } from '../../providers/shared-objects/shared-objects';
-import { GropByPipe } from '../../pipes/grop-by/grop-by';
 
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { Platform } from 'ionic-angular';
@@ -16,13 +15,12 @@ import { Platform } from 'ionic-angular';
 import * as _ from 'lodash';
 
 
-@IonicPage()
 @Component({
   selector: 'page-posiciones',
   templateUrl: 'posiciones.html',
 })
 export class PosicionesPage {
-  User = { Groups: [], Email: '', DummyGames: [] };
+  User = { Groups: [], Email: '', DummyGames: [], Games: [] };
   MenuOpciones:any = MenuopcionesPage;
   QuinielaGrupo:any = QuinielagrupoPage;
   selectedGroup:any = {};
@@ -90,10 +88,12 @@ export class PosicionesPage {
       // es que el que acierta ganador o empate gana 1 punto (Si además acierta resultado gana 1 punto adicional)
       // Recorre cada usuario del grupo para estimar la cantidad de puntos según el BetType
 
-      // El usuario de donde se sacará el Dummy Game
+      // El usuario de donde se sacará el Dummy Game el usuarios que se recorre para el grupo que se recorre
+      // En el fondo son los mismo datos del usuario actual
       var userDummyGame = Data.Users.filter(function(usr){
-        return usr.Email == userEmail;
+        return usr.Email == userEmail && usr.GroupName == eachGroup.Name;
       })[0];
+
 
       Data.Users.forEach(function(User){
 
@@ -113,6 +113,9 @@ export class PosicionesPage {
             // Por cada pronóstico busca cada resultado si lo acertó y el BetType == 1 (1 punto) si además el BetType == 2 y acertó el resultado 1 punto más. Sólo
             // los juegos que se hayan considerado terminado. Los pronóstico son del usuario que se le pase a ésta función
 
+            // Recorre cada pronóstico de cada jugador que haya colocado algún valor en homegoal y visitor goal de DummyGames
+            console.log('DALE 2');
+
             var myUserDummyGame = userDummyGame.DummyGames.filter(function(UserDummyGame){
               return UserDummyGame.game == UserGame.game &&
               ((typeof UserDummyGame.homegoal == 'string' && UserDummyGame.homegoal.trim() != '') || (typeof UserDummyGame.homegoal == 'number')) &&
@@ -121,7 +124,8 @@ export class PosicionesPage {
               ((typeof UserGame.visitorgoal == 'string' && UserGame.visitorgoal.trim() != '')  || (typeof UserGame.visitorgoal == 'number'))
             })[0];
 
-            // Si no devolvió nada es que el juego no está finalizado y no aumenta el Score a nadie
+            // Si no devolvió nada es que o no hay pronóstico del usuario para ese juego o que no terminó o no se colocó valor
+            // real o dummy para ese juego
             if (typeof myUserDummyGame != 'undefined')
             {
               if
@@ -199,30 +203,34 @@ export class PosicionesPage {
 
             // Si viene con juegos simulados pasa a sobre escribir todos los juegos siempre y cuando no venga de simulaciones propio
             var mOwnCal = this.ctrlSharedObjectsProvider.getOwnCalc();
-            if (mOwnCal == false){
-              // Recorre cada juego simulado si lo consigue entre los juegos ya definidos los marca como están definidos
-              // caso contrario los deja 0 a 0 sin finalizar
-              this.User.DummyGames.forEach(function(eachUserGame){
-                var lendedGame =   [{homegoal: 0, visitorgoal: 0, game: ''}];
+            // Recorre cada juego simulado si lo consigue entre los juegos ya definidos los marca como están definidos
+            // caso contrario los deja 0 a 0 sin finalizar
+            console.log('DALE 3');
 
-                var lendedGame = self.endedGames.filter(function(endedGame){
-                  return endedGame.game == eachUserGame.game
-                })
-                // Si el juego no existe 0 a 0 sin terminar el juego para permitir editar
-                if (lendedGame.length == 0){
+            this.User.DummyGames.forEach(function(eachUserGame){
+              var lendedGame =   [{homegoal: 0, visitorgoal: 0, game: ''}];
+
+              var lendedGame = self.endedGames.filter(function(endedGame){
+                return endedGame.game == eachUserGame.game
+              })
+              // Si el juego no existe 0 a 0 sin terminar el juego para permitir editar
+              if (lendedGame.length == 0){
+                // Colocará sin definir cada juego que no esté ya ejecutado salvo que venga de haber colocado una simulación. En éste Caso
+                // dejará en los juegos no terminado lo que haya colocado el usuario
+                if (mOwnCal == false){
                   eachUserGame.isEnded = false;
                   eachUserGame.homegoal = undefined;
                   eachUserGame.visitorgoal = undefined;
                 }
-                // Caso contrario coloca el marcador dque viene y el juego lo coloca cerrado para que no pueda editar
-                else{
-                  eachUserGame.isEnded = true;
-                  eachUserGame.homegoal = lendedGame[0].homegoal;
-                  eachUserGame.visitorgoal = lendedGame[0].visitorgoal;
-                }
-              })
-              this.ctrlSharedObjectsProvider.setUser(self.User);
-            }
+              }
+              // Caso contrario coloca el marcador dque viene y el juego lo coloca cerrado para que no pueda editar
+              else{
+                eachUserGame.isEnded = true;
+                eachUserGame.homegoal = lendedGame[0].homegoal;
+                eachUserGame.visitorgoal = lendedGame[0].visitorgoal;
+              }
+            })
+            this.ctrlSharedObjectsProvider.setUser(self.User);
 
 
             // El primer procesamiento es con la data actual del user actual
@@ -232,15 +240,42 @@ export class PosicionesPage {
             // Extrae diferentes usuarios para enviar a procesar. Internamente procesará con todos en la función
             var distinctUsersGroups = _.uniqBy(this.UsersGroups, 'Email');
 
+            // Recorre todos los usuarios que trajo el servicio (Repetidos por grupo)
 
-            distinctUsersGroups.forEach(function(User){
-              // Cada juego no terminado lo termina con el resultado igual al pronosticado
-              User.DummyGames.forEach(function(usrDummyGame){
-                if (typeof User.Games[usrDummyGame.game] != 'undefined'){
-                  usrDummyGame.homegoal = User.Games[usrDummyGame.game].homegoal;
-                  usrDummyGame.visitorgoal = User.Games[usrDummyGame.game].visitorgoal;
+            var PartidosDistintos = _.uniqBy(this.UsersGroups[0].DummyGames, 'game');
+            var PartidosDistintos4 = _.uniqBy(this.UsersGroups[0].Games, 'game');
+            var PartidosDistintos2 = _.uniqBy(self.User.DummyGames, 'game');
+            var PartidosDistintos3 = _.uniqBy(self.User.Games, 'game');
+
+            this.UsersGroups.forEach(function(UserGroup){
+              // Recorre todos los juegos simulados
+
+              UserGroup.DummyGames.forEach(function(usrDummyGame){
+                // Si el juego simulado NO tiene resultado REAL para el usuario conectado colocará como resultados sus pronósticos
+
+                var lactiveGame = self.User.DummyGames.filter(function(el){return el.game == usrDummyGame.game})[0];
+
+                if (!(lactiveGame.homegoal && lactiveGame.visitorgoal)){
+                  var lactiveGame2 = UserGroup.Games.filter(function(el){return el.game == usrDummyGame.game})[0];
+
+                  usrDummyGame.homegoal = lactiveGame2.homegoal;
+                  usrDummyGame.visitorgoal = lactiveGame2.visitorgoal;
+                }
+                else{
+                  console.log('Partido que ya está');
                 }
               })
+            })
+
+            // Por cada jugador lla a función que calculará su mejor posición posible
+            distinctUsersGroups.forEach(function(User){
+              // // Cada juego no terminado lo termina con el resultado igual al pronosticado
+              // User.DummyGames.forEach(function(usrDummyGame){
+              //   if (typeof User.Games[usrDummyGame.game] != 'undefined'){
+              //     usrDummyGame.homegoal = User.Games[usrDummyGame.game].homegoal;
+              //     usrDummyGame.visitorgoal = User.Games[usrDummyGame.game].visitorgoal;
+              //   }
+              // })
               self.processResults(self.UsersGroups, User.Email, true );
             });
 
@@ -271,7 +306,7 @@ export class PosicionesPage {
         // Extrae los diferentes usuarios/calculos de cada grupo de quiniela
         var distinctUser = _.uniqBy(self.UsersPlayers, 'BetBy');
 
-        // Por cada Bet de cada usuario agrupa
+        // Filtra por que en éste arrreglo hay por cada grupo usuarios repetidos por bet también
         distinctUser.forEach(function(eachBetUser){
           var allUserPlayerByGroupByBet = allUserPlayerByGroup.filter(function(eachUserGroupResultByBet){
             return eachUserGroupResultByBet.BetBy == eachBetUser.BetBy;
@@ -317,7 +352,7 @@ export class PosicionesPage {
           return eachUserGroupResultByBet.GroupName == eachUserGroup.Name;
         })
 
-        // Agrupa por cada User
+        // Agrupa por cada User debido a que arriba filtra sólo por grupo y el grupo se repite por cada BetBy
         var allDistintUserPlayerByGroupByBet = _.uniqBy(allUserPlayerByGroupByBet, 'Email');
 
         // Por cada jugador ve su peor posición posible em el grupo actual
