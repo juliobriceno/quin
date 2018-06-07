@@ -11,9 +11,10 @@ page-posiciones {
   }
 
   .item-md{
-    background-color: transparent;
-    color:#fff;
-  }
+      background-color: transparent;
+      color:#fff;
+      border: 1px solid #fff;
+    }
 
   .text-input::-moz-placeholder {
     color: white;
@@ -27,13 +28,13 @@ page-posiciones {
     text-indent: 0;
     color: white;
   }
-.ion-label{
-    color: white;
-}
-.text-label{
-    color: white;
-}
-ion-icon {
+  .ion-label{
+      color: white;
+  }
+  .text-label{
+      color: white;
+  }
+  .ion-icon {
       font-size: 1.8em; //Preferred size here
   }
 
@@ -46,8 +47,8 @@ ion-icon {
   .bronce{
     color:#e0a24d;
   }
-.handdown{
-  color: #E5E5E5;
-}
+  .handdown{
+    color: #E5E5E5;
+  }
 
 }

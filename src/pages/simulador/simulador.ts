@@ -10,6 +10,8 @@ import { url } from "../../config/url.config"
 import { SharedObjectsProvider } from '../../providers/shared-objects/shared-objects';
 import * as _ from 'lodash';
 
+import 'rxjs/add/operator/timeout';
+
 @Component({
   selector: 'page-simulador',
   templateUrl: 'simulador.html',
@@ -67,34 +69,49 @@ export class SimuladorPage {
 
     loading.present();
 
-    this.http
-      .post( mUrl, body ).subscribe(res => {
-        loading.dismiss();
+    this.http.post(mUrl, body)
+               .timeout(15000)
+               .subscribe((res) => {
 
-        this.Save = false;
 
-        // Para que refresque las posiciones cuando vaya
-        this.ctrlSharedObjectsProvider.setRefreshPosition(true);
-        this.ctrlSharedObjectsProvider.setOwnCalc(true);
+                 loading.dismiss();
 
-        if (res.json().result == 'ok' ){
-          this.ctrlSharedObjectsProvider.setUser(res.json().User);
+                 this.Save = false;
 
-          let alert = this.alertCtrl.create({
-            title: 'Listo!',
-            subTitle: 'Los datos fueron actualizados.',
-            buttons: ['Ok']
-          });
-          alert.present();
+                 // Para que refresque las posiciones cuando vaya
+                 this.ctrlSharedObjectsProvider.setRefreshPosition(true);
+                 this.ctrlSharedObjectsProvider.setOwnCalc(true);
 
-        }
-        else
-        {
-          // Caso distinto a OK vuelve a login page
-          this.navCtrl.setRoot(LoginPage);
-        }
-      }
-    )
+                 if (res.json().result == 'ok' ){
+                   this.ctrlSharedObjectsProvider.setUser(res.json().User);
+
+                   let alert = this.alertCtrl.create({
+                     title: 'Listo!',
+                     subTitle: 'Los datos fueron actualizados.',
+                     buttons: ['Ok']
+                   });
+                   alert.present();
+
+                 }
+                 else
+                 {
+                   // Caso distinto a OK vuelve a login page
+                   this.navCtrl.setRoot(LoginPage);
+                 }
+
+               }, (errorResponse: any) => {
+
+                 loading.dismiss();
+
+                 let alert = this.alertCtrl.create({
+                   title: 'Oops!',
+                   subTitle: 'Pareces tener problemas de conexión a internet',
+                   buttons: ['Ok']
+                 });
+                 alert.present();
+
+               });
+
 
   }
 

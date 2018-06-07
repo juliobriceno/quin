@@ -35,19 +35,31 @@
       <ion-col>
         <ion-list>
 
-
-          <ion-item *ngFor="let Group of User.Groups">
-
-            <ion-label>{{Group.Name}}</ion-label>
-
-            <button (click) ="DeleteGroup(Group.Name);" ion-button clear item-end><ion-icon name='close'></ion-icon></button>
-
-            <ion-select [(ngModel)]="Group.BetType" (ionChange)="UpdateUser();">
-              <ion-option value="1">Sólo ganador o empate</ion-option>
-              <ion-option value="2">Ganador o empate y goles</ion-option>
-            </ion-select>
-
-          </ion-item>
+          <ion-card style="background-color:transparent;margin-top:-5%;" >
+              <ion-card-content>
+              <ion-card-title  style="font-size:1.6rem;color:white;">
+                <ion-icon name="people" color="gray" small item-left></ion-icon> Grupos donde estoy:
+              </ion-card-title>
+              <div *ngFor="let Group of User.Groups">
+                <div style="border:1px solid #fff;">
+                  <ion-item>
+                    <ion-label>{{Group.Name}} </ion-label>
+                    <button (click) ="DeleteGroup(Group.Name);" ion-button clear item-end ><ion-icon name='close'></ion-icon></button>
+                  </ion-item>
+                    <ion-row  >
+                      <ion-item style="margin-top:1%;border-top:1px solid #fff;">
+                        <ion-label style="color:#fff;">Tipo de juego:</ion-label>
+                        <ion-select [(ngModel)]="Group.BetType">
+                              <ion-option value="1">Sólo ganador o empate</ion-option>
+                              <ion-option value="2">Ganador o empate y goles</ion-option>
+                        </ion-select>
+                      </ion-item>
+                    </ion-row>
+                </div>
+                <br>
+              </div>
+            </ion-card-content>
+          </ion-card>
 
         </ion-list>
       </ion-col>

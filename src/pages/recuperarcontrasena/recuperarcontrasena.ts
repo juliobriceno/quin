@@ -9,6 +9,8 @@ import { url } from "../../config/url.config"
 
 import { SharedObjectsProvider } from '../../providers/shared-objects/shared-objects';
 
+import 'rxjs/add/operator/timeout';
+
 @Component({
   selector: 'page-recuperarcontrasena',
   templateUrl: 'recuperarcontrasena.html',
@@ -54,35 +56,50 @@ export class RecuperarcontrasenaPage {
 
     loading.present();
 
-    this.http
-      .post( mUrl, body ).subscribe(res => {
-        loading.dismiss();
-        if (res.json().result == 'userExist' ){
-          let alert = this.alertCtrl.create({
-            title: 'Oops!',
-            subTitle: 'El usuario no existe. Ya te registraste?',
-            buttons: ['Ok']
-          });
-          alert.present();
-        }
-        else if (res.json().result == 'error'){
-          let alert = this.alertCtrl.create({
-            title: 'Oops!',
-            subTitle: 'Ocurrió un error inesperado.',
-            buttons: ['Ok']
-          });
-          alert.present();
-        }
-        else {
-          let alert = this.alertCtrl.create({
-            title: 'Genial!',
-            subTitle: 'Hemos enviado una contraseña temporal a tu correo.',
-            buttons: ['Ok']
-          });
-          alert.present();
-        }
-      }
-    )
+    this.http.post(mUrl, body)
+               .timeout(15000)
+               .subscribe((res) => {
+
+
+                 loading.dismiss();
+                 if (res.json().result == 'userExist' ){
+                   let alert = this.alertCtrl.create({
+                     title: 'Oops!',
+                     subTitle: 'El usuario no existe. Ya te registraste?',
+                     buttons: ['Ok']
+                   });
+                   alert.present();
+                 }
+                 else if (res.json().result == 'error'){
+                   let alert = this.alertCtrl.create({
+                     title: 'Oops!',
+                     subTitle: 'Ocurrió un error inesperado.',
+                     buttons: ['Ok']
+                   });
+                   alert.present();
+                 }
+                 else {
+                   let alert = this.alertCtrl.create({
+                     title: 'Genial!',
+                     subTitle: 'Hemos enviado una contraseña temporal a tu correo.',
+                     buttons: ['Ok']
+                   });
+                   alert.present();
+                 }
+
+               }, (errorResponse: any) => {
+
+                 loading.dismiss();
+
+                 let alert = this.alertCtrl.create({
+                   title: 'Oops!',
+                   subTitle: 'Pareces tener problemas de conexión a internet',
+                   buttons: ['Ok']
+                 });
+                 alert.present();
+
+               });
+
 
   }
 

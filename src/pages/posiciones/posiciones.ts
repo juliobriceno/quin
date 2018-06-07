@@ -14,6 +14,8 @@ import { Platform } from 'ionic-angular';
 
 import * as _ from 'lodash';
 
+import 'rxjs/add/operator/timeout';
+
 
 @Component({
   selector: 'page-posiciones',
@@ -25,6 +27,7 @@ export class PosicionesPage {
   QuinielaGrupo:any = QuinielagrupoPage;
   selectedGroup:any = {};
   UsersGroups:any = [];
+  backupUsersGroups:any = [];
   UsersPlayers = [];
   CurrentUsersPlayers = [];
   endedGames = [{homegoal: 0, visitorgoal: 0, game: ''}];
@@ -114,7 +117,6 @@ export class PosicionesPage {
             // los juegos que se hayan considerado terminado. Los pronóstico son del usuario que se le pase a ésta función
 
             // Recorre cada pronóstico de cada jugador que haya colocado algún valor en homegoal y visitor goal de DummyGames
-            console.log('DALE 2');
 
             var myUserDummyGame = userDummyGame.DummyGames.filter(function(UserDummyGame){
               return UserDummyGame.game == UserGame.game &&
@@ -123,6 +125,12 @@ export class PosicionesPage {
               ((typeof UserGame.homegoal == 'string' && UserGame.homegoal.trim() != '') || (typeof UserGame.homegoal == 'number')) &&
               ((typeof UserGame.visitorgoal == 'string' && UserGame.visitorgoal.trim() != '')  || (typeof UserGame.visitorgoal == 'number'))
             })[0];
+
+            // Si encontró juego, pero el usuario que se recorre es el que envió a calcular y el juego es simulado no permite sumar para encontrar
+            // su peor posición al perder todos los juegos
+            if (User.Email == userEmail && typeof myUserDummyGame != 'undefined' && myUserDummyGame.isSimulated == true){
+              myUserDummyGame = undefined;
+            }
 
             // Si no devolvió nada es que o no hay pronóstico del usuario para ese juego o que no terminó o no se colocó valor
             // real o dummy para ese juego
@@ -194,104 +202,132 @@ export class PosicionesPage {
 
       var self = this;
 
-      this.http
-        .post( mUrl, body ).subscribe(res => {
-          loading.dismiss();
-          if (res.json().result == 'ok' ){
-            this.UsersGroups = res.json().UsersGroups;
-            this.endedGames = res.json().endedGames;
+      this.http.post(mUrl, body)
+                 .timeout(15000)
+                 .subscribe((res) => {
 
-            // Si viene con juegos simulados pasa a sobre escribir todos los juegos siempre y cuando no venga de simulaciones propio
-            var mOwnCal = this.ctrlSharedObjectsProvider.getOwnCalc();
-            // Recorre cada juego simulado si lo consigue entre los juegos ya definidos los marca como están definidos
-            // caso contrario los deja 0 a 0 sin finalizar
-            console.log('DALE 3');
+                   loading.dismiss();
+                   if (res.json().result == 'ok' ){
+                     this.UsersGroups = res.json().UsersGroups;
+                     this.backupUsersGroups = _.cloneDeep(this.UsersGroups);
 
-            this.User.DummyGames.forEach(function(eachUserGame){
-              var lendedGame =   [{homegoal: 0, visitorgoal: 0, game: ''}];
+                     this.endedGames = res.json().endedGames;
 
-              var lendedGame = self.endedGames.filter(function(endedGame){
-                return endedGame.game == eachUserGame.game
-              })
-              // Si el juego no existe 0 a 0 sin terminar el juego para permitir editar
-              if (lendedGame.length == 0){
-                // Colocará sin definir cada juego que no esté ya ejecutado salvo que venga de haber colocado una simulación. En éste Caso
-                // dejará en los juegos no terminado lo que haya colocado el usuario
-                if (mOwnCal == false){
-                  eachUserGame.isEnded = false;
-                  eachUserGame.homegoal = undefined;
-                  eachUserGame.visitorgoal = undefined;
-                }
-              }
-              // Caso contrario coloca el marcador dque viene y el juego lo coloca cerrado para que no pueda editar
-              else{
-                eachUserGame.isEnded = true;
-                eachUserGame.homegoal = lendedGame[0].homegoal;
-                eachUserGame.visitorgoal = lendedGame[0].visitorgoal;
-              }
-            })
-            this.ctrlSharedObjectsProvider.setUser(self.User);
+                     // Si viene con juegos simulados pasa a sobre escribir todos los juegos siempre y cuando no venga de simulaciones propio
+                     var mOwnCal = this.ctrlSharedObjectsProvider.getOwnCalc();
+                     // Recorre cada juego simulado si lo consigue entre los juegos ya definidos los marca como están definidos
+                     // caso contrario los deja 0 a 0 sin finalizar
+
+                     this.User.DummyGames.forEach(function(eachUserGame){
+                       var lendedGame =   [{homegoal: 0, visitorgoal: 0, game: ''}];
+
+                       var lendedGame = self.endedGames.filter(function(endedGame){
+                         return endedGame.game == eachUserGame.game
+                       })
+                       // Si el juego no existe 0 a 0 sin terminar el juego para permitir editar
+                       if (lendedGame.length == 0){
+                         // Colocará sin definir cada juego que no esté ya ejecutado salvo que venga de haber colocado una simulación. En éste Caso
+                         // dejará en los juegos no terminado lo que haya colocado el usuario
+                         if (mOwnCal == false){
+                           eachUserGame.isEnded = false;
+                           eachUserGame.homegoal = undefined;
+                           eachUserGame.visitorgoal = undefined;
+                         }
+                       }
+                       // Caso contrario coloca el marcador dque viene y el juego lo coloca cerrado para que no pueda editar
+                       else{
+                         eachUserGame.isEnded = true;
+                         eachUserGame.homegoal = lendedGame[0].homegoal;
+                         eachUserGame.visitorgoal = lendedGame[0].visitorgoal;
+                       }
+                     })
+                     this.ctrlSharedObjectsProvider.setUser(self.User);
 
 
-            // El primer procesamiento es con la data actual del user actual
-            this.UsersPlayers = [];
-            // Por cada usuario calcula los resultados basados en todos los resultados faltantes perfectos según su quiniela
+                     // El primer procesamiento es con la data actual del user actual
+                     this.UsersPlayers = [];
+                     // Por cada usuario calcula los resultados basados en todos los resultados faltantes perfectos según su quiniela
 
-            // Extrae diferentes usuarios para enviar a procesar. Internamente procesará con todos en la función
-            var distinctUsersGroups = _.uniqBy(this.UsersGroups, 'Email');
+                     // Extrae diferentes usuarios para enviar a procesar. Internamente procesará con todos en la función
+                     var distinctUsersGroups = _.uniqBy(this.UsersGroups, 'Email');
 
-            // Recorre todos los usuarios que trajo el servicio (Repetidos por grupo)
+                     // Recorre todos los usuarios que trajo el servicio (Repetidos por grupo)
 
-            var PartidosDistintos = _.uniqBy(this.UsersGroups[0].DummyGames, 'game');
-            var PartidosDistintos4 = _.uniqBy(this.UsersGroups[0].Games, 'game');
-            var PartidosDistintos2 = _.uniqBy(self.User.DummyGames, 'game');
-            var PartidosDistintos3 = _.uniqBy(self.User.Games, 'game');
+                     var PartidosDistintos = _.uniqBy(this.UsersGroups[0].DummyGames, 'game');
+                     var PartidosDistintos4 = _.uniqBy(this.UsersGroups[0].Games, 'game');
+                     var PartidosDistintos2 = _.uniqBy(self.User.DummyGames, 'game');
+                     var PartidosDistintos3 = _.uniqBy(self.User.Games, 'game');
 
-            this.UsersGroups.forEach(function(UserGroup){
-              // Recorre todos los juegos simulados
+                     this.UsersGroups.forEach(function(UserGroup){
+                       // Recorre todos los juegos simulados
 
-              UserGroup.DummyGames.forEach(function(usrDummyGame){
-                // Si el juego simulado NO tiene resultado REAL para el usuario conectado colocará como resultados sus pronósticos
+                       UserGroup.DummyGames.forEach(function(usrDummyGame){
+                         // Si el juego simulado NO tiene resultado REAL para el usuario conectado colocará como resultados sus pronósticos
 
-                var lactiveGame = self.User.DummyGames.filter(function(el){return el.game == usrDummyGame.game})[0];
+                         var lactiveGame = self.User.DummyGames.filter(function(el){return el.game == usrDummyGame.game})[0];
 
-                if (!(lactiveGame.homegoal && lactiveGame.visitorgoal)){
-                  var lactiveGame2 = UserGroup.Games.filter(function(el){return el.game == usrDummyGame.game})[0];
+                         if (!(lactiveGame.homegoal && lactiveGame.visitorgoal)){
+                           var lactiveGame2 = UserGroup.Games.filter(function(el){return el.game == usrDummyGame.game})[0];
 
-                  usrDummyGame.homegoal = lactiveGame2.homegoal;
-                  usrDummyGame.visitorgoal = lactiveGame2.visitorgoal;
-                }
-                else{
-                  console.log('Partido que ya está');
-                }
-              })
-            })
+                           usrDummyGame.isSimulated = true;
+                           usrDummyGame.homegoal = lactiveGame2.homegoal;
+                           usrDummyGame.visitorgoal = lactiveGame2.visitorgoal;
+                         }
+                         else{
+                           usrDummyGame.isSimulated = false;
+                           console.log('Partido que ya está');
+                         }
+                       })
+                     })
 
-            // Por cada jugador lla a función que calculará su mejor posición posible
-            distinctUsersGroups.forEach(function(User){
-              // // Cada juego no terminado lo termina con el resultado igual al pronosticado
-              // User.DummyGames.forEach(function(usrDummyGame){
-              //   if (typeof User.Games[usrDummyGame.game] != 'undefined'){
-              //     usrDummyGame.homegoal = User.Games[usrDummyGame.game].homegoal;
-              //     usrDummyGame.visitorgoal = User.Games[usrDummyGame.game].visitorgoal;
-              //   }
-              // })
-              self.processResults(self.UsersGroups, User.Email, true );
-            });
+                     // Por cada jugador lla a función que calculará su mejor posición posible
+                     distinctUsersGroups.forEach(function(User){
+                       // // Cada juego no terminado lo termina con el resultado igual al pronosticado
+                       // User.DummyGames.forEach(function(usrDummyGame){
+                       //   if (typeof User.Games[usrDummyGame.game] != 'undefined'){
+                       //     usrDummyGame.homegoal = User.Games[usrDummyGame.game].homegoal;
+                       //     usrDummyGame.visitorgoal = User.Games[usrDummyGame.game].visitorgoal;
+                       //   }
+                       // })
+                       self.processResults(self.UsersGroups, User.Email, true );
+                     });
 
-            this.ShowNotifications();
+                     this.ShowNotifications(true);
 
-          }
-          else{
-            // Caso distinto a OK vuelve a login page
-            this.navCtrl.setRoot(LoginPage);
-          }
-        }
-      )
+                     // Llama de nuevo a los cálculos y a las notificaciones, pero sólo con los datos reales que vienen del server
+                     self.UsersGroups = [];
+                     self.UsersPlayers = [];
+                     self.UsersGroups = _.cloneDeep(self.backupUsersGroups);
+                     self.processResults(self.UsersGroups, self.User.Email, false );
+                     this.ShowNotifications(false);
+
+                   }
+                   else{
+                     // Caso distinto a OK vuelve a login page
+                     this.navCtrl.setRoot(LoginPage);
+                   }
+
+
+                 }, (errorResponse: any) => {
+
+                   loading.dismiss();
+
+                   let alert = this.alertCtrl.create({
+                     title: 'Oops!',
+                     subTitle: 'Pareces tener problemas de conexión a internet',
+                     buttons: ['Ok']
+                   });
+                   alert.present();
+
+                 });
+
+
+
+
 
     }
 
-    ShowNotifications(){
+    ShowNotifications(projecteddGames){
       var allUserPlayers = [];
       var self = this;
       let lNotifications = [];
@@ -337,79 +373,112 @@ export class PosicionesPage {
       // Recorre cada grupo del usuario actual
       this.User.Groups.forEach(function(eachUserGroup){
 
-        // Mensaje con la posición del usuario actual en cada uno de los grupos
-        self.UsersPlayers.forEach(function (userPlayer) {
-          if ( userPlayer.Email == self.User.Email && userPlayer.BetBy == self.User.Email && userPlayer.GroupName == eachUserGroup.Name ){
-            if(self.platform.is('cordova')){
-              lNotifications.push({ id: self.msgId, text: 'Estás en la posición: ' + userPlayer.Position, icon: "res://icon.png", smallIcon:"res://icon.png", title: 'Tú posición en grupo: ' + userPlayer.GroupName });
-              self.msgId ++;
+        // Sólo muestra el msg de la posición cuando no hay juegos proyectados
+        if (projecteddGames == false){
+          // Mensaje con la posición del usuario actual en cada uno de los grupos
+          self.UsersPlayers.forEach(function (userPlayer) {
+            if ( userPlayer.Email == self.User.Email && userPlayer.BetBy == self.User.Email && userPlayer.GroupName == eachUserGroup.Name ){
+              if(self.platform.is('cordova')){
+                lNotifications.push({ id: self.msgId, text: 'Estás en la posición: ' + userPlayer.Position, icon: "res://icon.png", smallIcon:"res://icon.png", title: 'Tú posición en grupo: ' + userPlayer.GroupName });
+                self.msgId ++;
+              }
             }
-          }
-        })
-
-        // Por cada grupo del usuario actual analiza cada jugador basado en la jugada del jugador actual
-        var allUserPlayerByGroupByBet = self.UsersPlayers.filter(function(eachUserGroupResultByBet){
-          return eachUserGroupResultByBet.GroupName == eachUserGroup.Name;
-        })
-
-        // Agrupa por cada User debido a que arriba filtra sólo por grupo y el grupo se repite por cada BetBy
-        var allDistintUserPlayerByGroupByBet = _.uniqBy(allUserPlayerByGroupByBet, 'Email');
-
-        // Por cada jugador ve su peor posición posible em el grupo actual
-        allDistintUserPlayerByGroupByBet.forEach(function(UserInGroup){
-
-          var UserInAllSameGroup = allUserPlayerByGroupByBet.filter(function(eachUserInGroup){
-            return eachUserInGroup.Email ==  UserInGroup.Email;
           })
-          // La peor posición posible para un User
-          UserInAllSameGroup = _.orderBy(UserInAllSameGroup, ['Position'], ['desc']);
+        }
 
-          if (UserInAllSameGroup[0].Position == 1){
-            self.UsersPlayers.forEach(function(eachUserPlayer){
-              if ( eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name && eachUserPlayer.BetBy == UserInGroup.BetBy ){
-                eachUserPlayer.Level = 'oro';
-                if(self.platform.is('cordova')){
-                  lNotifications.push({ id: self.msgId, text: UserInGroup.Alias + ' es campeón!!!', icon: "res://icon.png", smallIcon:"res://icon.png", title: "Campeón del grupo: " + eachUserPlayer.GroupName });
-                  self.msgId ++;
+        // Son los claculos con juegos proyectados. Es decir colocando como resultados los propios pronósticos del jugador en los juegos que falten
+        else{
+
+            // Por cada grupo del usuario actual analiza cada jugador basado en la jugada del jugador actual
+            var allUserPlayerByGroupByBet = self.UsersPlayers.filter(function(eachUserGroupResultByBet){
+              return eachUserGroupResultByBet.GroupName == eachUserGroup.Name;
+            })
+
+            // Agrupa por cada User debido a que arriba filtra sólo por grupo y el grupo se repite por cada BetBy
+            var allDistintUserPlayerByGroupByBet = _.uniqBy(allUserPlayerByGroupByBet, 'Email');
+
+            // Por cada jugador ve su peor posición posible em el grupo actual
+            allDistintUserPlayerByGroupByBet.forEach(function(UserInGroup){
+
+              var UserInAllSameGroup = allUserPlayerByGroupByBet.filter(function(eachUserInGroup){
+                return eachUserInGroup.Email ==  UserInGroup.Email;
+              })
+              // La peor posición posible para un User
+              UserInAllSameGroup = _.orderBy(UserInAllSameGroup, ['Position'], ['desc']);
+
+              // Ordenará por Score todos los cálculos del grupo (Donde estará la mejor posición posible de cada usuario y la peor del usuario actual)
+              var allUserPlayerByGroupOrderScore = _.orderBy(allUserPlayerByGroupByBet, ['Score'], ['desc']);
+
+              // Por cada grupo entero busca las posiciones (Las mejores posibles)
+              var mPosition = 0;
+              var mPositionUser = 0;
+              var mScore = 99999;
+
+              // Va guardndo la posición del usuario actual
+              allUserPlayerByGroupOrderScore.forEach(function(eachUserByGroupOrderScore){
+                if (mScore > eachUserByGroupOrderScore.Score){
+                  mPosition++;
+                  if (allUserPlayerByGroupOrderScore.Email == UserInGroup.Email){
+                    mPositionUser = mPosition;
+                  }
                 }
-              }
-            })
-          }
-          else if (UserInAllSameGroup[0].Position == 2){
-            self.UsersPlayers.forEach(function(eachUserPlayer){
-              if ( eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name && eachUserPlayer.BetBy == UserInGroup.BetBy ){
-                eachUserPlayer.Level = 'plata';
-                if(self.platform.is('cordova')){
-                  lNotifications.push({ id: self.msgId, text: UserInGroup.Alias + ' asegura medalla de plata!!!', icon: "res://icon.png", smallIcon:"res://icon.png", title: "Aseguró plata del grupo: " + eachUserPlayer.GroupName });
-                  self.msgId ++;
+                else{
+                  eachUserByGroupOrderScore.totalPosition = mPosition;
                 }
+              })
+
+              // Recorre el array la posicion donde encuentre al usuario actual es la posición donde quedará
+
+
+
+              if (mPositionUser == 1){
+                self.UsersPlayers.forEach(function(eachUserPlayer){
+                  if ( eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name && eachUserPlayer.BetBy == UserInGroup.BetBy ){
+                    eachUserPlayer.Level = 'oro';
+                    if(self.platform.is('cordova')){
+                      lNotifications.push({ id: self.msgId, text: UserInGroup.Alias + ' es campeón!!!', icon: "res://icon.png", smallIcon:"res://icon.png", title: "Campeón del grupo: " + eachUserPlayer.GroupName });
+                      self.msgId ++;
+                    }
+                  }
+                })
               }
-            })
-          }
-          else if (UserInAllSameGroup[0].Position == 3){
-            self.UsersPlayers.forEach(function(eachUserPlayer){
-              if ( eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name && eachUserPlayer.BetBy == UserInGroup.BetBy ){
-                eachUserPlayer.Level = 'bronce';
-                if(self.platform.is('cordova')){
-                  lNotifications.push({ id: self.msgId, text: UserInGroup.Alias + ' asegura medalla de bronce!!!: ', icon: "res://icon.png", smallIcon:"res://icon.png", title: "Aseguró bronce del grupo: " + eachUserPlayer.GroupName });
-                  self.msgId ++;
-                }
+              else if (mPositionUser == 2){
+                self.UsersPlayers.forEach(function(eachUserPlayer){
+                  if ( eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name && eachUserPlayer.BetBy == UserInGroup.BetBy ){
+                    eachUserPlayer.Level = 'plata';
+                    if(self.platform.is('cordova')){
+                      lNotifications.push({ id: self.msgId, text: UserInGroup.Alias + ' asegura medalla de plata!!!', icon: "res://icon.png", smallIcon:"res://icon.png", title: "Aseguró plata del grupo: " + eachUserPlayer.GroupName });
+                      self.msgId ++;
+                    }
+                  }
+                })
               }
-            })
-          }
-          else{
-            self.UsersPlayers.forEach(function(eachUserPlayer){
-              if (eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name){
-                eachUserPlayer.Level = 'handdown';
+              else if (mPositionUser == 3){
+                self.UsersPlayers.forEach(function(eachUserPlayer){
+                  if ( eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name && eachUserPlayer.BetBy == UserInGroup.BetBy ){
+                    eachUserPlayer.Level = 'bronce';
+                    if(self.platform.is('cordova')){
+                      lNotifications.push({ id: self.msgId, text: UserInGroup.Alias + ' asegura medalla de bronce!!!: ', icon: "res://icon.png", smallIcon:"res://icon.png", title: "Aseguró bronce del grupo: " + eachUserPlayer.GroupName });
+                      self.msgId ++;
+                    }
+                  }
+                })
               }
+              else{
+                self.UsersPlayers.forEach(function(eachUserPlayer){
+                  if (eachUserPlayer.Email == UserInGroup.Email && eachUserPlayer.GroupName == eachUserGroup.Name){
+                    eachUserPlayer.Level = 'handdown';
+                  }
+                })
+              }
+
+
+
             })
-          }
 
+        }
 
-          self.localNotifications.schedule( lNotifications );
-
-        })
-
+        self.localNotifications.schedule( lNotifications );
 
       })
 

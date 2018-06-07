@@ -7,6 +7,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { url } from "../../config/url.config"
 
+import 'rxjs/add/operator/timeout';
+
 import { SharedObjectsProvider } from '../../providers/shared-objects/shared-objects';
 
 @Component({
@@ -59,29 +61,45 @@ export class ContrasenaPage {
 
     loading.present();
 
-    this.http
-      .post( mUrl, body ).subscribe(res => {
-        loading.dismiss();
-        if (res.json().result == 'ok' ){
-          this.ctrlSharedObjectsProvider.setUser(res.json().User);
-          let alert = this.alertCtrl.create({
-            title: 'Listo!',
-            subTitle: 'La contraseña fue actualizada.',
-            buttons: ['Ok']
-          });
-          alert.present();
-        }
-        else
-        {
-          let alert = this.alertCtrl.create({
-            title: 'Oops!',
-            subTitle: 'El usuario no existe. Ya te registraste?',
-            buttons: ['Ok']
-          });
-          alert.present();
-        }
-      }
-    )
+    this.http.post(mUrl, body)
+               .timeout(15000)
+               .subscribe((res) => {
+
+
+                 loading.dismiss();
+                 if (res.json().result == 'ok' ){
+                   this.ctrlSharedObjectsProvider.setUser(res.json().User);
+                   let alert = this.alertCtrl.create({
+                     title: 'Listo!',
+                     subTitle: 'La contraseña fue actualizada.',
+                     buttons: ['Ok']
+                   });
+                   alert.present();
+                 }
+                 else
+                 {
+                   let alert = this.alertCtrl.create({
+                     title: 'Oops!',
+                     subTitle: 'El usuario no existe. Ya te registraste?',
+                     buttons: ['Ok']
+                   });
+                   alert.present();
+                 }
+
+
+               }, (errorResponse: any) => {
+
+                 loading.dismiss();
+
+                 let alert = this.alertCtrl.create({
+                   title: 'Oops!',
+                   subTitle: 'Pareces tener problemas de conexión a internet',
+                   buttons: ['Ok']
+                 });
+                 alert.present();
+
+               });
+
 
   }
 

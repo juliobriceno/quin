@@ -7,6 +7,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { url } from "../../config/url.config"
 
+import 'rxjs/add/operator/timeout';
+
 import { SharedObjectsProvider } from '../../providers/shared-objects/shared-objects';
 
 @Component({
@@ -111,55 +113,69 @@ export class LoginPage {
 
     var self = this;
 
-    this.http
-      .post( mUrl, body ).subscribe(res => {
-        loading.dismiss();
-        if (res.json().result == 'ok' ){
+    this.http.post(mUrl, body)
+               .timeout(15000)
+               .subscribe((res) => {
+
+                 loading.dismiss();
+                 if (res.json().result == 'ok' ){
 
 
-          this.User = res.json().User;
-          this.endedGames = res.json().endedGames;
+                   this.User = res.json().User;
+                   this.endedGames = res.json().endedGames;
 
-          // noBet determina si aún se permiten o no quiniela
-          this.noBet = res.json().noBet;
-          this.ctrlSharedObjectsProvider.setnoBet(this.noBet);
+                   // noBet determina si aún se permiten o no quiniela
+                   this.noBet = res.json().noBet;
+                   this.ctrlSharedObjectsProvider.setnoBet(this.noBet);
 
-          // Ésta nueva rutina permite verificar si hay juegos bloqueados
-          // Si viene con juegos simulados pasa a sobre escribir todos los juegos siempre y cuando no venga de simulaciones propio
-          // Recorre cada juego simulado si lo consigue entre los juegos ya definidos los marca como están definidos
-          // caso contrario los deja 0 a 0 sin finalizar
-          this.User.DummyGames.forEach(function(eachUserGame){
-            var lendedGame =   [{homegoal: 0, visitorgoal: 0, game: ''}];
+                   // Ésta nueva rutina permite verificar si hay juegos bloqueados
+                   // Si viene con juegos simulados pasa a sobre escribir todos los juegos siempre y cuando no venga de simulaciones propio
+                   // Recorre cada juego simulado si lo consigue entre los juegos ya definidos los marca como están definidos
+                   // caso contrario los deja 0 a 0 sin finalizar
+                   this.User.DummyGames.forEach(function(eachUserGame){
+                     var lendedGame =   [{homegoal: 0, visitorgoal: 0, game: ''}];
 
-            var lendedGame = self.endedGames.filter(function(endedGame){
-              return endedGame.game == eachUserGame.game
-            })
-            // Si el juego no existe 0 a 0 sin terminar el juego para permitir editar
-            if (lendedGame.length == 0){
-              eachUserGame.isEnded = false;
-              eachUserGame.homegoal = undefined;
-              eachUserGame.visitorgoal = undefined;
-            }
-            // Caso contrario coloca el marcador dque viene y el juego lo coloca cerrado para que no pueda editar
-            else{
-              eachUserGame.isEnded = true;
-              eachUserGame.homegoal = lendedGame[0].homegoal;
-              eachUserGame.visitorgoal = lendedGame[0].visitorgoal;
-            }
-          })
+                     var lendedGame = self.endedGames.filter(function(endedGame){
+                       return endedGame.game == eachUserGame.game
+                     })
+                     // Si el juego no existe 0 a 0 sin terminar el juego para permitir editar
+                     if (lendedGame.length == 0){
+                       eachUserGame.isEnded = false;
+                       eachUserGame.homegoal = undefined;
+                       eachUserGame.visitorgoal = undefined;
+                     }
+                     // Caso contrario coloca el marcador dque viene y el juego lo coloca cerrado para que no pueda editar
+                     else{
+                       eachUserGame.isEnded = true;
+                       eachUserGame.homegoal = lendedGame[0].homegoal;
+                       eachUserGame.visitorgoal = lendedGame[0].visitorgoal;
+                     }
+                   })
 
-          this.ctrlSharedObjectsProvider.setUser(this.User);
-          this.navCtrl.setRoot(TabsPage)
-        }
-        else{
-          let alert = this.alertCtrl.create({
-            title: 'Oops!',
-            subTitle: 'El usuario no existe! Ya te registraste?',
-            buttons: ['Ok']
-          });
-          alert.present();        }
-      }
-    )
+                   this.ctrlSharedObjectsProvider.setUser(this.User);
+                   this.navCtrl.setRoot(TabsPage)
+                 }
+                 else{
+                   let alert = this.alertCtrl.create({
+                     title: 'Oops!',
+                     subTitle: 'El usuario no existe! Ya te registraste?',
+                     buttons: ['Ok']
+                   });
+                   alert.present();        }
+
+
+               }, (errorResponse: any) => {
+
+                 loading.dismiss();
+
+                 let alert = this.alertCtrl.create({
+                   title: 'Oops!',
+                   subTitle: 'Pareces tener problemas de conexión a internet',
+                   buttons: ['Ok']
+                 });
+                 alert.present();
+
+               });
 
   }
 
@@ -186,30 +202,46 @@ export class LoginPage {
 
     loading.present();
 
-    this.http
-      .post( mUrl, body ).subscribe(res => {
-        loading.dismiss();
-        if (res.json().result == 'ok' ){
-          this.ctrlSharedObjectsProvider.setUser(res.json().User);
-          this.navCtrl.setRoot(TabsPage)
-        }
-        else if (res.json().result == 'userExist' ){
-          let alert = this.alertCtrl.create({
-            title: 'Oops!',
-            subTitle: 'El usuario que intentas crear ya existe.',
-            buttons: ['Ok']
-          });
-          alert.present();
-        }
-        else{
-          let alert = this.alertCtrl.create({
-            title: 'Oops!',
-            subTitle: 'Ocurrió un error inesperado.',
-            buttons: ['Ok']
-          });
-          alert.present();        }
-      }
-    )
+    this.http.post(mUrl, body)
+               .timeout(15000)
+               .subscribe((res) => {
+
+
+                 loading.dismiss();
+                 if (res.json().result == 'ok' ){
+                   this.ctrlSharedObjectsProvider.setUser(res.json().User);
+                   this.navCtrl.setRoot(TabsPage)
+                 }
+                 else if (res.json().result == 'userExist' ){
+                   let alert = this.alertCtrl.create({
+                     title: 'Oops!',
+                     subTitle: 'El usuario que intentas crear ya existe.',
+                     buttons: ['Ok']
+                   });
+                   alert.present();
+                 }
+                 else{
+                   let alert = this.alertCtrl.create({
+                     title: 'Oops!',
+                     subTitle: 'Ocurrió un error inesperado.',
+                     buttons: ['Ok']
+                   });
+                   alert.present();        }
+
+
+               }, (errorResponse: any) => {
+
+                 loading.dismiss();
+
+                 let alert = this.alertCtrl.create({
+                   title: 'Oops!',
+                   subTitle: 'Pareces tener problemas de conexión a internet',
+                   buttons: ['Ok']
+                 });
+                 alert.present();
+
+               });
+
 
   }
 

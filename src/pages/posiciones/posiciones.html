@@ -21,16 +21,22 @@
 
 <ion-content padding  class="background">
   <ion-list >
+
+    <ion-label color="blanco" style="font-size:1.6rem;">Selecciona un grupo: </ion-label>
+
     <ion-item>
-     <ion-label color="blanco">Escoge el grupo -->> </ion-label>
 
-     <ion-select [(ngModel)]="selectedGroup" (ionChange)="groupChange($event)">
-       <ion-option *ngFor="let Group of User.Groups">
-         {{ Group.Name }}
-       </ion-option>
-     </ion-select>
+      <ion-label color="blanco">Grupo </ion-label>
+      <ion-select [(ngModel)]="selectedGroup" (ionChange)="groupChange($event)">
+        <ion-option *ngFor="let Group of User.Groups">
+        {{ Group.Name }}
+        </ion-option>
+      </ion-select>
 
-   </ion-item>
+    </ion-item>
+
+    <br>
+
 
   <ion-item *ngFor="let UserPlayer of CurrentUsersPlayers">
     <ion-note item-start>

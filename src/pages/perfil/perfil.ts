@@ -9,6 +9,9 @@ import { url } from "../../config/url.config"
 
 import { SharedObjectsProvider } from '../../providers/shared-objects/shared-objects';
 
+import 'rxjs/add/operator/timeout';
+
+
 @Component({
   selector: 'page-perfil',
   templateUrl: 'perfil.html',
@@ -49,29 +52,47 @@ export class PerfilPage {
 
     loading.present();
 
-    this.http
-      .post( mUrl, body ).subscribe(res => {
-        loading.dismiss();
-        if (res.json().result == 'ok' ){
-          this.ctrlSharedObjectsProvider.setUser(res.json().User);
-          let alert = this.alertCtrl.create({
-            title: 'Listo!',
-            subTitle: 'Los datos fueron actualizados...',
-            buttons: ['Ok']
-          });
-          alert.present();
-        }
-        else
-        {
-          let alert = this.alertCtrl.create({
-            title: 'Oops!',
-            subTitle: 'El usuario no existe. Ya te registraste?',
-            buttons: ['Ok']
-          });
-          alert.present();
-        }
-      }
-    )
+
+
+        this.http.post(mUrl, body)
+                   .timeout(15000)
+                   .subscribe((res) => {
+
+
+                     loading.dismiss();
+                     if (res.json().result == 'ok' ){
+                       this.ctrlSharedObjectsProvider.setUser(res.json().User);
+                       let alert = this.alertCtrl.create({
+                         title: 'Listo!',
+                         subTitle: 'Los datos fueron actualizados...',
+                         buttons: ['Ok']
+                       });
+                       alert.present();
+                     }
+                     else
+                     {
+                       let alert = this.alertCtrl.create({
+                         title: 'Oops!',
+                         subTitle: 'El usuario no existe. Ya te registraste?',
+                         buttons: ['Ok']
+                       });
+                       alert.present();
+                     }
+
+
+                   }, (errorResponse: any) => {
+
+                     loading.dismiss();
+
+                     let alert = this.alertCtrl.create({
+                       title: 'Oops!',
+                       subTitle: 'Pareces tener problemas de conexión a internet',
+                       buttons: ['Ok']
+                     });
+                     alert.present();
+
+                   });
+
 
   }
 

@@ -11,6 +11,8 @@ import { SharedObjectsProvider } from '../../providers/shared-objects/shared-obj
 
 import { Platform } from 'ionic-angular';
 
+import 'rxjs/add/operator/timeout';
+
 
 @Component({
   selector: 'page-menuopciones',
@@ -40,24 +42,40 @@ export class MenuopcionesPage {
 
     loading.present();
 
-    this.http
-      .post( mUrl, body ).subscribe(res => {
-        loading.dismiss();
 
-        if (res.json().result == 'ok' ){
-          this.platform.exitApp();
-        }
-        else
-        {
-          let alert = this.alertCtrl.create({
-            title: 'Oops!',
-            subTitle: 'No se pudo cerrar sesión.',
-            buttons: ['Ok']
-          });
-          alert.present();
-        }
-      }
-    )
+    this.http.post(mUrl, body)
+               .timeout(15000)
+               .subscribe((res) => {
+
+
+                 loading.dismiss();
+
+                 if (res.json().result == 'ok' ){
+                   this.platform.exitApp();
+                 }
+                 else
+                 {
+                   let alert = this.alertCtrl.create({
+                     title: 'Oops!',
+                     subTitle: 'No se pudo cerrar sesión.',
+                     buttons: ['Ok']
+                   });
+                   alert.present();
+                 }
+
+               }, (errorResponse: any) => {
+
+                 loading.dismiss();
+
+                 let alert = this.alertCtrl.create({
+                   title: 'Oops!',
+                   subTitle: 'Pareces tener problemas de conexión a internet',
+                   buttons: ['Ok']
+                 });
+                 alert.present();
+
+               });
+
 
   }
 

@@ -17,6 +17,8 @@ import { BackgroundMode } from '@ionic-native/background-mode';
 import { Socket } from 'ng-socket-io';
 import { Observable } from 'rxjs/Observable';
 
+import 'rxjs/add/operator/timeout';
+
 import { App } from 'ionic-angular';
 
 @Component({
@@ -117,31 +119,47 @@ export class HomePage {
 
     loading.present();
 
-    this.http
-      .post( mUrl, body ).subscribe(res => {
-        loading.dismiss();
+    this.http.post(mUrl, body)
+               .timeout(15000)
+               .subscribe((res) => {
 
-        this.Save = false;
 
-        // Para que refresque las posiciones cuando vaya
-        this.ctrlSharedObjectsProvider.setRefreshPosition(true);
+                 loading.dismiss();
 
-        if (res.json().result == 'ok' ){
-          this.ctrlSharedObjectsProvider.setUser(res.json().User);
-          let alert = this.alertCtrl.create({
-            title: 'Listo!',
-            subTitle: 'Tu quiniela fue actualizada.',
-            buttons: ['Ok']
-          });
-          alert.present();
-        }
-        else
-        {
-          // Caso distinto a OK vuelve a login page
-          this.navCtrl.setRoot(LoginPage);
-        }
-      }
-    )
+                 this.Save = false;
+
+                 // Para que refresque las posiciones cuando vaya
+                 this.ctrlSharedObjectsProvider.setRefreshPosition(true);
+
+                 if (res.json().result == 'ok' ){
+                   this.ctrlSharedObjectsProvider.setUser(res.json().User);
+                   let alert = this.alertCtrl.create({
+                     title: 'Listo!',
+                     subTitle: 'Tu quiniela fue actualizada.',
+                     buttons: ['Ok']
+                   });
+                   alert.present();
+                 }
+                 else
+                 {
+                   // Caso distinto a OK vuelve a login page
+                   this.navCtrl.setRoot(LoginPage);
+                 }
+
+
+               }, (errorResponse: any) => {
+
+                 loading.dismiss();
+
+                 let alert = this.alertCtrl.create({
+                   title: 'Oops!',
+                   subTitle: 'Pareces tener problemas de conexión a internet',
+                   buttons: ['Ok']
+                 });
+                 alert.present();
+
+               });
+
 
   }
 
