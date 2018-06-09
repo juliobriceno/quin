@@ -17,7 +17,7 @@
   <ion-grid>
     <ion-list inset>
 
-      <ion-item-group *ngFor="let GameGroup of User.DummyGames | separator:'gamedate'" >
+      <ion-item-group *ngFor="let GameGroup of User.Games | separator:'gamedate'" >
         <ion-item-divider> <h2>{{GameGroup.key}}</h2></ion-item-divider>
         <ion-row *ngFor="let Game of GameGroup.value; let in = index" >
           <ion-col col>
@@ -26,7 +26,7 @@
                 <img src="{{Game.homeflag}}">
               </ion-avatar>
                <ion-label floating>{{Game.homename}}</ion-label>
-              <ion-input [(ngModel)]="Game.homegoal" type="number" (keypress)="keyPress($event);" ></ion-input>
+              <ion-input [disabled]="Bloqueo" [(ngModel)]="Game.homegoal" type="number" (keypress)="keyPress($event);" ></ion-input>
             </ion-item>
           </ion-col>
           <ion-col col>
@@ -35,7 +35,7 @@
                 <img src="{{Game.visitorflag}}">
               </ion-avatar>
                <ion-label floating>{{Game.visitorname}}</ion-label>
-              <ion-input [(ngModel)]="Game.visitorgoal" type="number" (keypress)="keyPress($event);" ></ion-input>
+              <ion-input [disabled]="Bloqueo" [(ngModel)]="Game.visitorgoal" type="number" (keypress)="keyPress($event);" ></ion-input>
             </ion-item>
           </ion-col>
         </ion-row>

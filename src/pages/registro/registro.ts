@@ -11,6 +11,8 @@ import { SharedObjectsProvider } from '../../providers/shared-objects/shared-obj
 
 import 'rxjs/add/operator/timeout';
 
+import { ToastController } from 'ionic-angular';
+
 @Component({
   selector: 'page-registro',
   templateUrl: 'registro.html',
@@ -24,7 +26,17 @@ export class RegistroPage {
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
                     public loadingCtrl: LoadingController,
-                    public ctrlSharedObjectsProvider:SharedObjectsProvider) {
+                    public ctrlSharedObjectsProvider:SharedObjectsProvider, private toastCtrl: ToastController) {
+
+                      let toast = this.toastCtrl.create({
+                        message: 'Crea grupos de juego (O únete a otros ya creados por otros usuarios).',
+                        duration: 5000,
+                        position: 'bottom'
+                      });
+
+                      toast.present();
+
+
   }
 
 

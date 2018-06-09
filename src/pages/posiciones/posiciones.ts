@@ -16,6 +16,11 @@ import * as _ from 'lodash';
 
 import 'rxjs/add/operator/timeout';
 
+import { ToastController } from 'ionic-angular';
+
+import { Socket } from 'ng-socket-io';
+import { Observable } from 'rxjs/Observable';
+
 
 @Component({
   selector: 'page-posiciones',
@@ -37,7 +42,88 @@ export class PosicionesPage {
                     public loadingCtrl: LoadingController,
                     public ctrlSharedObjectsProvider:SharedObjectsProvider,
                     public localNotifications: LocalNotifications,
-                    public platform: Platform) {
+                    public platform: Platform, private toastCtrl: ToastController, private socket: Socket) {
+
+                      let toast = this.toastCtrl.create({
+                        message: 'Consulta las posiciones de todos los grupos donde juegas.',
+                        duration: 4000,
+                        position: 'bottom'
+                      });
+
+                      toast.present();
+
+
+                      // Se une al socket por donde recibirá los resultados de los juegos
+                      this.socket.connect();
+                      // Llama a algo de coba
+                      this.socket.emit('set-email', this.User.Email);
+
+                      this.getMsgs().subscribe(data => {
+                        // Al obtener la orden del server procede a llamar a pantalla de resultados
+                        // Para que refresque las posiciones cuando vaya
+
+                        this.GetUsersGroups();
+
+                        let toast = this.toastCtrl.create({
+                          message: 'Acaba de terminar un partido y se actualizó la tabla.',
+                          duration: 4000,
+                          position: 'bottom'
+                        });
+
+                        toast.present();
+
+                      });
+
+                      this.getGroupsMsg().subscribe(data => {
+                        // Al obtener la orden del server procede a llamar a pantalla de resultados
+                        // Para que refresque las posiciones cuando vaya
+                        // Al recibir datos del server de personas añadidas a grupo verifica si es uno de los grupos del usuario actual, si lo es prepara
+                        // para actualizar resultados y avisa que hay nuevas personas en el grupo
+
+                        // Si el mensaje viene de un usuario distinto a éste y tiene grupos en donde está éste usuario
+                        // avisa que hay integrantes nuevos
+                        var self = this;
+
+                        if (data['Email'] != this.User.Email){
+                          data['punionGroups'].forEach(function(punionGroup){
+                            self.User.Groups.forEach(function(eachUserGroup){
+                              if (eachUserGroup.Name == punionGroup.groupAdded){
+
+                                self.GetUsersGroups();
+
+                                 let toast = self.toastCtrl.create({
+                                   message: 'Hay un nuevo usuario en algunos de tus grupos.',
+                                   duration: 4000,
+                                   position: 'bottom'
+                                 });
+
+                                 toast.present();
+
+                              }
+                            })
+                          })
+                        }
+
+                      });
+
+  }
+
+  getMsgs() {
+    let observable = new Observable(observer => {
+      this.socket.on('finishedGame', (data) => {
+        observer.next(data);
+      });
+    });
+    return observable;
+  }
+
+  getGroupsMsg() {
+    let observable2 = new Observable(observer2 => {
+      this.socket.on('groupsChange', (data2) => {
+        observer2.next(data2);
+      });
+    });
+    return observable2;
   }
 
   ionViewWillEnter(){
@@ -51,6 +137,8 @@ export class PosicionesPage {
     var antoherUser = this.UsersGroups.filter(function(eachUser){
       return eachUser.Email == userEmail;
     })[0];
+    console.log('Antoher user');
+    console.log(antoherUser);
     this.ctrlSharedObjectsProvider.setanotherUser(antoherUser);
     this.navCtrl.push( QuinielagrupoPage );
   }
@@ -92,9 +180,9 @@ export class PosicionesPage {
       // Recorre cada usuario del grupo para estimar la cantidad de puntos según el BetType
 
       // El usuario de donde se sacará el Dummy Game el usuarios que se recorre para el grupo que se recorre
-      // En el fondo son los mismo datos del usuario actual
+      // En el fondo son los mismo datos del usuario actual // Error se le quitó el grupo sólo se necesitan los datos usuario actual
       var userDummyGame = Data.Users.filter(function(usr){
-        return usr.Email == userEmail && usr.GroupName == eachGroup.Name;
+        return usr.Email == userEmail;
       })[0];
 
 
@@ -209,6 +297,11 @@ export class PosicionesPage {
                    loading.dismiss();
                    if (res.json().result == 'ok' ){
                      this.UsersGroups = res.json().UsersGroups;
+
+                     console.log('LO QUE VIENEEEEEEEEEEEE ANTES');
+                     console.log(this.UsersGroups);
+
+
                      this.backupUsersGroups = _.cloneDeep(this.UsersGroups);
 
                      this.endedGames = res.json().endedGames;
@@ -262,20 +355,29 @@ export class PosicionesPage {
                        // Recorre todos los juegos simulados
 
                        UserGroup.DummyGames.forEach(function(usrDummyGame){
+
                          // Si el juego simulado NO tiene resultado REAL para el usuario conectado colocará como resultados sus pronósticos
 
                          var lactiveGame = self.User.DummyGames.filter(function(el){return el.game == usrDummyGame.game})[0];
 
-                         if (!(lactiveGame.homegoal && lactiveGame.visitorgoal)){
+                         if ((!lactiveGame.homegoal) || (!lactiveGame.visitorgoal)){
                            var lactiveGame2 = UserGroup.Games.filter(function(el){return el.game == usrDummyGame.game})[0];
-
-                           usrDummyGame.isSimulated = true;
-                           usrDummyGame.homegoal = lactiveGame2.homegoal;
-                           usrDummyGame.visitorgoal = lactiveGame2.visitorgoal;
+                           // Si el usuario colocó pronóstico
+                           if (lactiveGame2.homegoal && lactiveGame2.visitorgoal){
+                             usrDummyGame.isSimulated = true;
+                             usrDummyGame.homegoal = lactiveGame2.homegoal;
+                             usrDummyGame.visitorgoal = lactiveGame2.visitorgoal;
+                           }
+                           else{
+                             usrDummyGame.isSimulated = false;
+                             usrDummyGame.homegoal = undefined;
+                             usrDummyGame.visitorgoal = undefined;
+                           }
                          }
                          else{
                            usrDummyGame.isSimulated = false;
-                           console.log('Partido que ya está');
+                           usrDummyGame.homegoal = undefined;
+                           usrDummyGame.visitorgoal = undefined;
                          }
                        })
                      })
@@ -300,6 +402,10 @@ export class PosicionesPage {
                      self.UsersGroups = _.cloneDeep(self.backupUsersGroups);
                      self.processResults(self.UsersGroups, self.User.Email, false );
                      this.ShowNotifications(false);
+
+                     console.log('LO QUE VIENEEEEEEEEEEEE');
+                     console.log(self.UsersPlayers);
+                     console.log(self.UsersGroups);
 
                    }
                    else{
@@ -400,11 +506,11 @@ export class PosicionesPage {
             // Por cada jugador ve su peor posición posible em el grupo actual
             allDistintUserPlayerByGroupByBet.forEach(function(UserInGroup){
 
-              var UserInAllSameGroup = allUserPlayerByGroupByBet.filter(function(eachUserInGroup){
-                return eachUserInGroup.Email ==  UserInGroup.Email;
-              })
-              // La peor posición posible para un User
-              UserInAllSameGroup = _.orderBy(UserInAllSameGroup, ['Position'], ['desc']);
+              // var UserInAllSameGroup = allUserPlayerByGroupByBet.filter(function(eachUserInGroup){
+              //   return eachUserInGroup.Email ==  UserInGroup.Email;
+              // })
+              // // La peor posición posible para un User
+              // UserInAllSameGroup = _.orderBy(UserInAllSameGroup, ['Position'], ['desc']);
 
               // Ordenará por Score todos los cálculos del grupo (Donde estará la mejor posición posible de cada usuario y la peor del usuario actual)
               var allUserPlayerByGroupOrderScore = _.orderBy(allUserPlayerByGroupByBet, ['Score'], ['desc']);
@@ -418,7 +524,7 @@ export class PosicionesPage {
               allUserPlayerByGroupOrderScore.forEach(function(eachUserByGroupOrderScore){
                 if (mScore > eachUserByGroupOrderScore.Score){
                   mPosition++;
-                  if (allUserPlayerByGroupOrderScore.Email == UserInGroup.Email){
+                  if (eachUserByGroupOrderScore.Email == UserInGroup.Email){
                     mPositionUser = mPosition;
                   }
                 }

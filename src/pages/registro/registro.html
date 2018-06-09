@@ -8,6 +8,7 @@
   <ion-navbar color="rojo">
     <ion-title>Mis Grupos</ion-title>
     <ion-buttons end>
+      <button (click) ="AddGroup();" ion-button icon-only  ><ion-icon name="checkmark"></ion-icon>Guardar</button>
       <button ion-button icon-only
       [navPush]="tab10">
     </button>
@@ -24,9 +25,8 @@
       <ion-col col-12>
         <ion-list no-lines padding-top>
           <ion-item>
-            <ion-input [(ngModel)]="newGroupName" type="text" placeholder="Nombre grupo" clearInput="true"></ion-input>
+            <ion-input [(ngModel)]="newGroupName" type="text" placeholder="Nombre nuevo grupo" clearInput="true"></ion-input>
             <ion-icon name="clipboard" color="gray" small item-left></ion-icon>
-            <button (click) ="AddGroup();" ion-button small item-end color="blumundial"><ion-icon name='add'></ion-icon></button>
           </ion-item>
         </ion-list>
       </ion-col>
@@ -43,13 +43,13 @@
               <div *ngFor="let Group of User.Groups">
                 <div style="border:1px solid #fff;">
                   <ion-item>
-                    <ion-label>{{Group.Name}} </ion-label>
+                    <ion-label><strong>{{Group.Name}}</strong></ion-label>
                     <button (click) ="DeleteGroup(Group.Name);" ion-button clear item-end ><ion-icon name='close'></ion-icon></button>
                   </ion-item>
                     <ion-row  >
                       <ion-item style="margin-top:1%;border-top:1px solid #fff;">
                         <ion-label style="color:#fff;">Tipo de juego:</ion-label>
-                        <ion-select [(ngModel)]="Group.BetType">
+                        <ion-select [(ngModel)]="Group.BetType" (ionChange)="UpdateUser();">
                               <ion-option value="1">Sólo ganador o empate</ion-option>
                               <ion-option value="2">Ganador o empate y goles</ion-option>
                         </ion-select>

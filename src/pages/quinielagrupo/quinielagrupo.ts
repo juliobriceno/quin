@@ -18,6 +18,7 @@ import { NgModule } from '@angular/core';
 })
 export class QuinielagrupoPage {
   User = { };
+  Bloqueo = true;
 
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
@@ -28,6 +29,8 @@ export class QuinielagrupoPage {
 
     ionViewWillEnter(){
       this.User = this.ctrlSharedObjectsProvider.getanotherUser();
+      console.log('Lo que viene del usuarios escogido');
+      console.log(this.User);
     }
 
 }

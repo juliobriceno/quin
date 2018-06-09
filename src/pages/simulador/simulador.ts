@@ -12,6 +12,8 @@ import * as _ from 'lodash';
 
 import 'rxjs/add/operator/timeout';
 
+import { ToastController } from 'ionic-angular';
+
 @Component({
   selector: 'page-simulador',
   templateUrl: 'simulador.html',
@@ -23,7 +25,16 @@ export class SimuladorPage {
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,
                     public loadingCtrl: LoadingController,
-                    public ctrlSharedObjectsProvider:SharedObjectsProvider) {
+                    public ctrlSharedObjectsProvider:SharedObjectsProvider, private toastCtrl: ToastController) {
+
+                      let toast = this.toastCtrl.create({
+                        message: 'Aquí puedes colocar los resultados de los juegos que no hayan finalizado para ver cómo quedarían las posiciones.',
+                        duration: 5000,
+                        position: 'bottom'
+                      });
+
+                      toast.present();
+
   }
 
   ionViewWillEnter(){

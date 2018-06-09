@@ -46,6 +46,7 @@ export class LoginPage {
     Password: new FormControl('', [Validators.required]),
     Email: new FormControl('', [Validators.required, Validators.pattern(EMAILPATTERN)]),
     });
+
   }
 
   matchValidator(fieldName: string) {
