@@ -9,6 +9,8 @@ export class SharedObjectsProvider {
   ActualGroup = '';
   OwnCalc = true;
   noBet = false;
+  goinSearch = false;
+  groupSearch = '';
 
   setUser(value) {
     this.User = value;
@@ -64,6 +66,22 @@ export class SharedObjectsProvider {
 
   getnoBet() {
     return this.noBet;
+  }
+
+  setgoinSearch(value) {
+    this.goinSearch = value;
+  }
+
+  getgoinSearch() {
+    return this.goinSearch;
+  }
+
+  setgroupSearch(value) {
+    this.groupSearch = value;
+  }
+
+  getgroupSearch() {
+    return this.groupSearch;
   }
 
 }

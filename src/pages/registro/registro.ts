@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Http } from '@angular/http';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { HomePage, MenuopcionesPage, LoginPage } from "../index.paginas";
+import { HomePage, MenuopcionesPage, LoginPage, BuscargrupoPage } from "../index.paginas";
 import { AlertController, LoadingController } from 'ionic-angular';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -20,6 +20,7 @@ import { ToastController } from 'ionic-angular';
 export class RegistroPage {
   User = { Groups: [] };
   MenuOpciones:any = MenuopcionesPage;
+  Buscargrupo:any = BuscargrupoPage;
   newGroupName = '';
   deleteGroup = true;
   fromGroup = false;
@@ -42,6 +43,11 @@ export class RegistroPage {
 
     ionViewWillEnter(){
       this.User = this.ctrlSharedObjectsProvider.getUser();
+      if (this.ctrlSharedObjectsProvider.getgoinSearch() == true){
+        this.newGroupName = this.ctrlSharedObjectsProvider.getgroupSearch();
+        this.AddGroup();
+        this.ctrlSharedObjectsProvider.setgoinSearch(false);
+      }
     }
 
     DeleteGroup(groupName) {
