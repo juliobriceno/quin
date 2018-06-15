@@ -6,7 +6,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { MyApp } from './app.component';
 // import {HomePage,PosicionesPage,TabsPage,RegistroPage,MenuopcionesPage,PerfilPage,ContrasenaPage,QuinielagrupoPage,RecuperarcontrasenaPage,SimuladorPage} from '../pages/index.paginas';
-import {HomePage, SimuladorPage, QuinielagrupoPage, PosicionesPage, RegistroPage, TabsPage, MenuopcionesPage, PerfilPage, ContrasenaPage, RecuperarcontrasenaPage, LoginPage, BuscargrupoPage} from '../pages/index.paginas';
+import {HomePage, SimuladorPage, QuinielagrupoPage, PosicionesPage, RegistroPage, TabsPage, MenuopcionesPage, PerfilPage, ContrasenaPage, RecuperarcontrasenaPage, LoginPage, BuscargrupoPage,PreguntasfrecuentesPage} from '../pages/index.paginas';
 import { SharedObjectsProvider } from '../providers/shared-objects/shared-objects';
 
 // import { GropByPipe } from '../pipes/grop-by/grop-by';
@@ -16,7 +16,8 @@ import { BackgroundMode } from '@ionic-native/background-mode';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 
 import { SocketIoModule, SocketIoConfig } from 'ng-socket-io';
-const config: SocketIoConfig = { url: 'https://jokaquiniela.herokuapp.com', options: {} };
+// const config: SocketIoConfig = { url: 'https://jokaquiniela.herokuapp.com', options: {} };
+const config: SocketIoConfig = { url: 'http://192.168.1.126:3000', options: {} };
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ const config: SocketIoConfig = { url: 'https://jokaquiniela.herokuapp.com', opti
     ContrasenaPage,
     RecuperarcontrasenaPage,
     LoginPage,
-    BuscargrupoPage
+    BuscargrupoPage,
+    PreguntasfrecuentesPage
     // GroupByPipe
   ],
   imports: [
@@ -56,7 +58,8 @@ const config: SocketIoConfig = { url: 'https://jokaquiniela.herokuapp.com', opti
     SimuladorPage,
     RecuperarcontrasenaPage,
     LoginPage,
-    BuscargrupoPage
+    BuscargrupoPage,
+    PreguntasfrecuentesPage
   ],
   providers: [
     StatusBar,

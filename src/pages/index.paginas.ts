@@ -10,3 +10,4 @@ export {RecuperarcontrasenaPage} from "./recuperarcontrasena/recuperarcontrasena
 export {SimuladorPage} from "./simulador/simulador";
 export {LoginPage} from "./login/login";
 export {BuscargrupoPage} from "./buscargrupo/buscargrupo";
+export {PreguntasfrecuentesPage} from "./preguntasfrecuentes/preguntasfrecuentes";

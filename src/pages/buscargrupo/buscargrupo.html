@@ -18,6 +18,7 @@
   <ion-searchbar
     [(ngModel)]="txtSearch"
     [debounce]="500"
+    [placeholder]="Buscar"
     [showCancelButton]="shouldShowCancel"
     (ionInput)="onInput($event)">
   </ion-searchbar>

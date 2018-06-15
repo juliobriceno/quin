@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Http } from '@angular/http';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { HomePage, PerfilPage, ContrasenaPage } from "../index.paginas";
+import { HomePage, PerfilPage, ContrasenaPage, PreguntasfrecuentesPage } from "../index.paginas";
 import { AlertController, LoadingController } from 'ionic-angular';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -22,6 +22,7 @@ export class MenuopcionesPage {
 
   mPerfilPage:any = PerfilPage;
   mContrasenaPage:any = ContrasenaPage;
+  mPreguntasPage:any = PreguntasfrecuentesPage;
 
   constructor(      public navCtrl: NavController, public navParams: NavParams,
                     public http: Http, public alertCtrl: AlertController,

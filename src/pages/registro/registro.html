@@ -21,20 +21,20 @@
 </ion-header>
 <ion-content padding class="background">
 
-  <ion-fab bottom right>
+  <ion-fab top right>
     <button ion-fab
             color="primary"
             [navPush]="Buscargrupo">
             <ion-icon name="search"></ion-icon>
     </button>
   </ion-fab>
-    
+
   <ion-grid>
     <ion-row>
       <ion-col col-12>
         <ion-list no-lines padding-top>
           <ion-item>
-            <ion-input [(ngModel)]="newGroupName" type="text" placeholder="Nombre nuevo grupo" clearInput="true"></ion-input>
+            <ion-input [(ngModel)]="newGroupName" type="text" placeholder="Grupo nuevo o existente" clearInput="true"></ion-input>
             <ion-icon name="clipboard" color="gray" small item-left></ion-icon>
           </ion-item>
         </ion-list>
@@ -49,7 +49,7 @@
               <ion-card-title  style="font-size:1.6rem;color:white;">
                 <ion-icon name="people" color="gray" small item-left></ion-icon> Grupos donde estoy:
               </ion-card-title>
-              <div *ngFor="let Group of User.Groups">
+              <div *ngFor="let Group of User.Groups; let in = index">
                 <div style="border:1px solid #fff;">
                   <ion-item>
                     <ion-label><strong>{{Group.Name}}</strong></ion-label>

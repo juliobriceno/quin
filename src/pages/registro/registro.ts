@@ -30,7 +30,7 @@ export class RegistroPage {
                     public ctrlSharedObjectsProvider:SharedObjectsProvider, private toastCtrl: ToastController) {
 
                       let toast = this.toastCtrl.create({
-                        message: 'Crea grupos de juego (O únete a otros ya creados por otros usuarios).',
+                        message: 'Crea grupos de juego (O únete -Busca con la Lupa- a otros ya creados por otros usuarios).',
                         duration: 5000,
                         position: 'bottom'
                       });

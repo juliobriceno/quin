@@ -5,7 +5,7 @@ import { MenuopcionesPage } from "../index.paginas";
 import { AlertController, LoadingController } from 'ionic-angular';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
-import { PosicionesPage, TabsPage, LoginPage } from "../index.paginas";
+import { PosicionesPage, TabsPage, LoginPage, PreguntasfrecuentesPage } from "../index.paginas";
 
 import { url } from "../../config/url.config"
 
@@ -38,6 +38,15 @@ export class BuscargrupoPage {
                     public http: Http, public alertCtrl: AlertController,
                     public loadingCtrl: LoadingController,
                     public ctrlSharedObjectsProvider:SharedObjectsProvider, public backgroundMode: BackgroundMode, public platform: Platform, private socket: Socket, public app: App, private toastCtrl: ToastController) {
+
+                      let toast = this.toastCtrl.create({
+                        message: 'Escribe algunas letras del grupo que buscas.',
+                        duration: 4000,
+                        position: 'bottom'
+                      });
+
+                      toast.present();
+
   }
 
   ionViewDidLoad() {
